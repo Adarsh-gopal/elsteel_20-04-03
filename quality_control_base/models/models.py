@@ -237,8 +237,8 @@ class InspectionSheet(models.Model):
                 self.state = 'reject'
         else:
             raise UserError(_("""OOPS!!!\nLooks like you aren't authorized to Reject"""))
-        if self.quantity_accepted + self.quantity_rejected + self.quantity_destructive + self.under_deviation != self.quantity_recieved:
-            raise ValidationError(_("""Sum of Quantities (Accepeted, Rejected, Destructive and Accepeted under Deviation) "MUST" be equal to Recieved Quantity"""))
+        # if self.quantity_accepted + self.quantity_rejected + self.quantity_destructive + self.under_deviation != self.quantity_recieved:
+        #     raise ValidationError(_("""Sum of Quantities (Accepeted, Rejected, Destructive and Accepeted under Deviation) "MUST" be equal to Recieved Quantity"""))
 
     @api.model
     def create(self,vals):
