@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.actions.server" id="action_update_so_number_production">
+        <field name="name">Update Sale Order</field>
+        <field name="model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+                if records:
+                    action = records.update_sale_order_number()
+          </field>
+    </record>
+    
+    <record model="ir.actions.server" id="action_update_so_number_workorder">
+        <field name="name">Update SO Number</field>
+        <field name="model_id" ref="mrp.model_mrp_workorder"/>
+        <field name="binding_model_id" ref="mrp.model_mrp_workorder"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+                if records:
+                    action = records.get_sale_order()
+          </field>
+    </record>
+
+    <record id="view_mrp_workcenter_search_inherited_sale_number" model="ir.ui.view">
+            <field name="name">mrp.workorder.search.inherited</field>
+            <field name="model">mrp.workorder</field>
+            <field name="inherit_id" ref="mrp.view_mrp_production_work_order_search"/>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="so_order_id"/>
+                </search>
+            </field>
+        </record>
+
+     <record id="mrp_workorder_salenumber_form_inherit_search_view" model="ir.ui.view">
+        <field name="name">mrp.production.form.view.inherit.sale.number.search.view</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_workorder_form_view_filter"/>
+        <field name="arch" type="xml">
+            <search>
+                <field name="so_order_id"/>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="mrp_workorder_salenumber_form_inherit_" model="ir.ui.view">
+        <field name="name">mrp.production.form.view.inherit.sale.no.view</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <!-- <field name="so_order_id" /> -->
+                <field name="customer_id" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_mrp_production_form_view_inherit_serial_no" model="ir.ui.view">
+            <field name="name">mrp.production.form.view.inherit.serial.no.view</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='move_raw_ids']//field[@name='product_id']" position="before">
+                    <field name='serial_no' readonly="1" style="width:1%%"/>
+                </xpath>
+            </field>
+        </record>
+
+    <record id="mrp_workcenter_line_kanban_view_inherit" model="ir.ui.view">
+        <field name="name">mrp.workcenter.line.kanban.inherit.view</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.workcenter_line_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="total_output_quantity"/>
+                <field name="so_order_id"/>
+                <field name="customer_id"/>
+            </xpath>
+            <xpath expr="//templates//div[hasclass('oe_kanban_global_click')]//div[hasclass('o_kanban_record_bottom')]" position="after">
+                <div class="o_kanban_record_bottom_after">
+                    <h5 class="oe_kanban_bottom_left_addition">
+                        <t t-if="record.total_output_quantity.raw_value > 0">
+                            <span>Total Output Quantity : <t t-esc="record.total_output_quantity.value"/> </span><br/>
+                        </t>
+                        <t t-if="record.customer_id.raw_value">
+                            <span><t t-esc="record.customer_id.value"/></span>             
+                        </t>
+                        <t t-if="record.so_order_id.raw_value">
+                            <span>, <t t-esc="record.so_order_id.value"/></span>             
+                        </t>                  
+                    </h5>
+                </div>
+                
+            </xpath>
+        </field>
+    </record>
+
+   <!--  <record id="view_mrp_workorder_pivot_inherit" model="ir.ui.view">
+            <field name="name">mrp.workorder.pivot.view.inherit</field>
+            <field name="model">mrp.workorder</field>
+            <field name="inherit_id" ref="mrp.workcenter_line_pivot"/>
+            <field name="arch" type="xml">
+                <field name='operation_id' position='after'>
+                    <field name="shift_ids" type="row"/>
+                </field>
+            </field>
+        </record>
+ -->
+</odoo>
+

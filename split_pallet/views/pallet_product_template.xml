@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+         
+        <record id="product_template_form_view_inherit_split_pallet" model="ir.ui.view">
+            <field name="name">product_template_only_form_view_inherit_split_pallet</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <field name="company_id" position="before">
+                    <field name="pallet_capacity" string="Pallet Capacity"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_mrp_production_split_form_inherited_pallet" model="ir.ui.view">
+            <field name="name">Split Production Inherited</field>
+            <field name="model">mrp.production.split</field>
+            <field name="inherit_id" ref="split_manufacturing.view_mrp_production_split_form"/>
+            <field name="arch" type="xml">
+                <field name="product_uom_id" position="after">
+                    <field name="is_pallet_capacity" string="Pallet Based"/>
+                </field>
+            </field>
+        </record>
+
+
+         <record id="view_mrp_production_split_multi_form_inherited_pallet" model="ir.ui.view">
+            <field name="name">mrp.production.split.multi.form.inherited</field>
+            <field name="model">mrp.production.split.multi</field>
+            <field name="inherit_id" ref="split_manufacturing.view_mrp_production_split_multi_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="inside">
+                    <field name="is_pallet_capacity" string="Pallet Based"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+    

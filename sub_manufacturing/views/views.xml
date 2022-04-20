@@ -1,0 +1,111 @@
+<odoo>
+  <data>
+    
+    <record id="mrp_production_form_view" model="ir.ui.view">
+      <field name="model">mrp.production</field>
+      <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+      <field name="arch" type="xml">
+        <button name="action_confirm" position="after">
+          <button name="submfg" type="object" string="SUB MFG ORDER"
+                  attrs="{'invisible': [('state','!=','draft'), ('state', '!=', 'confirmed')]}"/>
+        </button>
+        <xpath expr="//page[@name='miscellaneous']//field[@name='origin']" position="after">
+          <field name="submfg_source_id" readonly="True"/>
+        </xpath>
+        <div name="button_box" position="inside">
+          <button type="object" name="action_view_mo_sub_mfg_order" class="oe_stat_button" icon="fa-wrench" groups="base.group_user" attrs="{'invisible': [('suborder_mfg_count', '=', 0)]}">
+
+           <!--  <field name="suborder_mfg_count" widget="statinfo" string="SUB MFG ORDER"/> -->
+            <field name="suborder_mfg_count" widget="stat_info" readonly="True"/>
+            <div class="o_field_widget o_stat_info">
+              <span class="o_stat_text">SUB</span>
+              <span class="o_stat_text">MFG Order</span>
+            </div>
+        </button>
+        </div>
+      </field>
+    </record>
+
+
+
+
+    <record id="mrp_submfg_mo_wiz_view_form" model="ir.ui.view">
+      <field name="name">mrp.submfg.mo.wiz.view.form</field>
+      <field name="model">mrp.submfg.mo.wiz</field>
+      <field name="arch" type="xml">
+        <form string="Sub MFG Order MO">
+          <!-- <group>
+            <group>
+              <field name="mo_id" string="Source No." readonly="True"/>
+            </group>
+            <group>
+              <field name="quantity" string="To Produce Qty" readonly="True"/>
+            </group>
+          </group> -->
+          <field name="submfg_mo_lines">
+            <tree editable="bottom">
+              <field name="quantity"/>
+              <field name="scheduled_date"/>
+              <field name="responsible" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>
+            </tree>
+          </field>
+          <footer>
+            <button name="submfg" type="object" string="Process" class="oe_highlight"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+    <record id="mrp_production_tree_view_extend" model="ir.ui.view">
+      <field name="model">mrp.production</field>
+      <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+      <field name="arch" type="xml">
+        <field name="origin" position="after">
+              <field name="submfg_source_id" optional="show"/>
+        </field>
+      </field>
+    </record>
+
+     <record id="view_mrp_production_filter_extend" model="ir.ui.view">
+      <field name="model">mrp.production</field>
+      <field name="inherit_id" ref="mrp.view_mrp_production_filter"/>
+      <field name="arch" type="xml">
+        <field name="origin" position="after">
+              <field name="submfg_source_id"/>
+        </field>
+        <xpath expr="//group" position="inside">
+          <filter string="SUB MFG Order Source" name="submfg_source_id" domain="[]" context="{'group_by': 'submfg_source_id'}"/>
+        </xpath>
+      </field>
+    </record>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.mrp.submfg.order</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="mrp.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div class="col-lg-6 col-12 o_setting_box" id="mrp_lock" position="after">
+                <div class="col-12 col-lg-6 o_setting_box" id="paper_format_setting">
+                    <div class="o_setting_right_pane" id="mo_submfg_seq">
+                        <span class="o_form_label">SUB MFG Order Sequence</span>
+                        <!-- <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/> -->
+                        <div class="text-muted">
+                          Set the sequence format of Sub MFG Order MO
+                        </div>
+                        <div class="content-group" id="submfg_sequence">
+                            <div class="mt16 row">
+                                <label for="submfg_sequence_id" string="Sequence" class="col-3 col-lg-3 o_light_label"/>
+                                <field name="submfg_sequence_id" class="oe_inline" required="0" options="{'no_create': True, 'no_create_edit':True}"/>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+    
+        </field>
+    </record>
+
+    
+  </data>
+</odoo>

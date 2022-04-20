@@ -1,0 +1,28 @@
+<odoo>
+  <data>
+    <record id="sequential_planning_mrp_bom_form_view" model="ir.ui.view">
+        <field name="name">sequential.planning.mrp.bom.form.view</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='picking_type_id']" position="after">
+              <field name="xg_activate_sequential_planning"/>
+            </xpath>
+            
+        </field>                   
+    </record>
+
+    <record model="ir.actions.server" id="action_update_sequential_planning_production">
+        <field name="name">Sequential Planning</field>
+        <field name="model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">
+                if records:
+                    action = records.action_sequential_planning()
+          </field>
+    </record>
+     
+  </data>
+</odoo>

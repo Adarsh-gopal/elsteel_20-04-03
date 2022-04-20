@@ -1,0 +1,116 @@
+<odoo>
+  <data>
+
+     <record id="product_colour_mrp_workorder_view_form_tablet_inherited" model="ir.ui.view">
+        <field name="name">mrp.workorder.view.form.inherit.quality.tablet.new</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp_workorder.mrp_workorder_view_form_tablet"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('workorder_bar')]" position="after">
+                <div class="o_row workorder_bar" style="padding-left:15px;background-color: $o-wo-tablet-bg;color:color: $o-wo-tablet-text;">
+                    <label for='product_colour' string="Description 2:" style="font-size:20px;" attrs="{'invisible': [('product_colour', '=',False)]}"/>
+                    <field name="product_colour"/>
+                </div>
+            </xpath>   
+        </field>
+    </record>
+
+    <record id="product_colouring_sale_order_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.colour.sale.order.form.view</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet//field[@name='order_line']//tree//field[@name='name']" position="after">
+              <field name="product_colour"/>
+            </xpath>
+            
+        </field>                   
+    </record>
+
+    <record id="product_colouring_stock_picking_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.colour.stock.picking.form.view</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet//field[@name='move_ids_without_package']//tree//field[@name='product_id']" position="after">
+                <field name="product_colour" readonly="1"/>
+            </xpath>
+            
+        </field>                   
+    </record>
+
+
+    <record id="product_colouring_stock_move_line_tree_view_inherit" model="ir.ui.view">
+        <field name="name">product.colour.stock.move.line.tree.view</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="product_colour" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="product_colouring_mrp_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.colour.manufacturing.form.view</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('o_row')][3]" position="after">
+                <label for='product_colour' string="Description 2"/>
+                <div class="o_row">
+                    <field name="product_colour"/>
+                </div>
+            </xpath>        
+        </field>                   
+    </record>
+
+
+    <record id="product_colouring_mrp_production_view_tree_view_inherit" model="ir.ui.view">
+        <field name="name">product.colour.mrp.production.tree.view</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="product_colour" string="Description 2" readonly="1"/>
+            </xpath> 
+        </field>
+    </record>
+
+
+    <record id="product_colouring_mrp_production_workorder_tree_view_inherit" model="ir.ui.view">
+        <field name="name">product.colour.mrp.workorder.tree.view</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_editable_view"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                 <field name="product_colour" readonly="1"/>
+            </field>
+        </field>
+    </record> 
+   
+    <record id="product_colour_mrp_workcenter_line_kanban_view_inherit" model="ir.ui.view">
+        <field name="name">product.colour.mrp.workcenter.line.kanban.inherit.view</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.workcenter_line_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="product_colour"/>
+            </xpath>
+            <xpath expr="//templates//div[hasclass('oe_kanban_global_click')]//div[hasclass('o_kanban_record_bottom')]" position="after">
+                <div >
+                    <h5 >
+                        <t t-if="record.product_colour.raw_value">
+                            <span>Description 2 :<t t-esc="record.product_colour.value"/> </span><br/>
+                        </t>
+                    </h5>
+                </div>
+                
+            </xpath>
+        </field>
+    </record>
+
+    
+  </data>
+</odoo>

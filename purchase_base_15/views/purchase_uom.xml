@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <data>
+        <record id="view_purchase_order_inherit_vender_uom" model="ir.ui.view">
+            <field name="name">purchaseorder.form.inherit.uom.product.supplierinfo</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+            <field name="arch" type="xml">
+               <!--  <field name="product_uom" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field> -->
+                <xpath expr="//div[hasclass('o_row')]" position="after">
+                    <field name="uom_product" domain="[('category_id', '=', product_uom_category_id)]" options="{'no_create': True, 'no_create_edit':True}" invisible="0"/>
+                    <field name="product_uom_category_id" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_partner_form_reference_move" model="ir.ui.view">
+            <field name="name">res.partner.form.reference.move</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group/group[2]" position="inside">
+                    <xpath expr="//field[@name='ref']" position="move"/>
+                </xpath>
+                <xpath expr="//field[@name='vat']" position="attributes">
+                    <attribute name="string">VAT/GST</attribute>
+                </xpath>
+            </field>
+        </record>
+
+
+        
+
+
+        <record id="view_product_supplierinfo_tree_view_inherit" model="ir.ui.view">
+            <field name="name">purchaseorder.tree.product.supplierinfo.inherit</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="delete">0</attribute>
+                </xpath>
+                <field name="product_uom" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </field>
+                <field name="product_uom" position="after">
+                    <field name="uom_product" optional="show"/>
+                </field>
+                
+            </field>
+        </record>
+
+        
+    </data>
+</odoo>

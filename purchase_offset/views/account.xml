@@ -1,0 +1,15 @@
+<odoo>
+  <data>
+    <record id="product_category_form_view_inherit_purchase_offset_14" model="ir.ui.view">
+      <field name="name">product.category.view.form.inherit</field>
+      <field name="model">product.category</field>
+      <field name="inherit_id" ref="product.product_category_form_view"/>
+      <field name="arch" type="xml">
+        <field name="property_account_expense_categ_id" position="after">
+          <field name="purchase_account_id"/>
+          <field name="purchase_offset_account_id"/>
+        </field>
+      </field>
+    </record>
+  </data>
+</odoo>
