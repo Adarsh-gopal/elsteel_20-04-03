@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="crm_enclosure_form" model="ir.ui.view">
+			<field name="name">crm.lead.form.elsteel_crm_enclosure.crm_enclosure</field>
+	      	<field name="model">crm.lead</field>
+	      	<field name="inherit_id" ref="crm.crm_lead_view_form"/>
+	      	<field name="arch" type="xml">
+	      		<xpath expr="//group[@name='opportunity_info']" position="inside">
+		        	<field name="crm_project_type" string = "Project Type" widget="radio"/>
+				</xpath>
+                <notebook position="inside">
+                    <page name="enclosure" string="Special Enclosure" attrs="{'invisible': [('crm_project_type', '!=', 'enclosure')]}">
+                        <group>
+                            <button style="float:right;" name="spcl_encls_button_method" string="Genarate Special Enclosure" class="oe_highlight"  attrs="{'invisible': [('spcl_encls_button', '=', True)]}" type="object" col="4" colspan="4"/>
+
+                            <group string="General Information" col="4" colspan="4">
+                                <field name="name" string = "Project Name"/>
+                                <field name="se_qr_no"/>
+                                <field name="enclosure_designation"/>
+                                <field name="se_qr_deadline"/>
+                                <field name="assigned_to"/>
+                                <field name="se_qr_rev_no"/>
+                            </group>
+                            <group string="Product Documentation" col="4" colspan="4">
+                                <field name="drawing_update_no"/>
+                                <field name="bom_update_no"/>
+                                <field name="doc_deadline"/>
+                            </group>
+                            <group string="Project Status Overview" col="4" colspan="4">
+                                <field name="se_qt_status"/>
+                                <field name="se_req_received"/>
+                                <field name="se_cust_drawing_sent"/>
+                                <field name="po_received"/>
+                                <field name="spcl_encls_button" invisible="1"/>
+                            </group>    
+                        </group>
+                    </page>
+
+                </notebook>
+	        </field>
+	    </record>
+        <record id="crm_enclosure_form_inherit" model="ir.ui.view">
+            <field name="name">crm_lead_view_form.inherit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+               <xpath expr="/form/sheet/div[@name='button_box']/button[@name='action_schedule_meeting']" position="after">
+                    <button style="float:right;" name="action_spcl_enclosure_function" string="Special Enclosure" attrs="{'invisible': [('spcl_encls_button', '=', False)]}" type="object" 
+                        class="oe_stat_button" icon="fa-archive"/>
+                        </xpath> 
+            </field>
+            </record>       
+  		
+	</data>
+</odoo>
+

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="sequence_se_qr_name" model="ir.sequence">
+            <field name="name">Special Enclosure</field>
+            <field name="code">spcl.enclosure</field>
+            <field name="prefix">SE</field>
+            <field name="padding">2</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="req_num_sequence" model="ir.sequence">
+            <field name="name">Request Number</field>
+            <field name="code">req.num.sequence</field>
+            <field name="prefix"></field>
+            <field name="padding">2</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

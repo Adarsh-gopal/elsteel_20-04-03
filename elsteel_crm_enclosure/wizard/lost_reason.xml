@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_lost_reason_enclosure_form" model="ir.ui.view" >
+            <field name="name">lost.reason.enclosure.form</field>
+            <field name="model">lost.reason.enclosure</field>
+
+            <field name="arch" type="xml">
+                <form>
+                    <group name="reason_name">
+                <field name="lost_reason"/>
+            </group>
+                <footer>
+                        <button string="Confirm" name="confirm_reason" class="oe_highlight" type="object" />
+                </footer>
+            </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

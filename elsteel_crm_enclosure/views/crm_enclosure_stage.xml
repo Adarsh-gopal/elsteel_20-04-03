@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="crm_enclosure_stage_search" model="ir.ui.view">
+        <field name="name">Stage - Search</field>
+        <field name="model">crm.enclosure.stage</field>
+        <field name="arch" type="xml">
+            <search string="Stage Search">
+                <field name="name"/>
+                <field name="sequence"/>
+                <field name="team_id"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- STAGES TREE VIEW + MUTI_EDIT -->
+    <record id="crm_enclosure_stage_tree" model="ir.ui.view">
+        <field name="name">crm.enclosure.stage.tree</field>
+        <field name="model">crm.enclosure.stage</field>
+        <field name="arch" type="xml">
+            <tree string="Stages" multi_edit="1">
+                <field name="sequence" widget="handle"/>
+                <field name="name" readonly="1"/>
+                <field name="team_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="crm_enclosure_stage_form" model="ir.ui.view">
+        <field name="name">crm.enclosure.stage.form</field>
+        <field name="model">crm.enclosure.stage</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <form string="Stage">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Negotiation"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                           
+                            <field name="fold"/>
+                            <field name="team_id" options='{"no_open": True, "no_create": True}'/>
+                            <field name="approve_bool" widget="boolean_toggle" />
+                            <field name="approval_method" attrs = "{'invisible':[('approve_bool','=',False)]}"/>
+                        </group>
+                    </group>
+                    <separator string="Requirements"/>
+                    <field name="requirements" nolabel="1" placeholder="Give your team the requirements to move an opportunity to this stage."/>
+                    <notebook>
+                        <page string="Details" name="details" attrs = "{'invisible':[('approve_bool','=',False)]}">
+                            <field name="approval_lines" widget="section_and_note_one2many">
+                                <tree string="Requisition Approval Lines" editable="bottom">
+                                    <field name="user_ids" widget="many2many_tags" required="1" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                    <field name="approval_one" attrs="{'column_invisible':[('parent.approval_method', 'not in',['1','2','3'])]}"/>
+                                    <field name="approval_two" attrs="{'column_invisible':[('parent.approval_method', 'not in',['2','3'])]}"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="crm_enclosure_stage_action" model="ir.actions.act_window">
+            <field name="name">Enlosure Stages</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">crm.enclosure.stage</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create Special Enclosure
+                </p>
+            </field>
+        </record>
+
+
+    <menuitem id="menu_enclosure_stage"
+                  name="Enclosure Stages"
+                  parent="crm.menu_crm_config_lead"
+                  action="crm_enclosure_stage_action"
+                  sequence="5"/>
+
+</odoo>

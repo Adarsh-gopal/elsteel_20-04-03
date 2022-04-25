@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+
+access_crm_enclosure,spcl_enclosure,model_spcl_enclosure,base.group_user,1,1,1,1
+access_crm_enclosure_stage,crm_enclosure_stage,model_crm_enclosure_stage,base.group_user,1,1,1,1
+access_lost_reason_enclosure,lost_reason_enclosure,model_lost_reason_enclosure,base.group_user,1,1,1,1
+access_enclosure_approval_line,enclosure_approval_line,model_enclosure_approval_line,base.group_user,1,1,1,1
+access_spcl_enclosure_line,spcl_enclosure_line,model_spcl_enclosure_line,base.group_user,1,1,1,1
+
+
+
+
+
