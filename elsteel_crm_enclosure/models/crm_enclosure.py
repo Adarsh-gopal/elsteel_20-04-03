@@ -28,12 +28,12 @@ class CRMEnclosure(models.Model):
     spcl_encls_button = fields.Boolean(string="Spcl Encl Button")
 
     
-    # def spcl_encls_button_method(self):
-    #     for rec in self:
-    #         rec.spcl_encls_button = True
-    #         self.env['spcl.enclosure'].create({
+    def spcl_encls_button_method(self):
+        for rec in self:
+            rec.spcl_encls_button = True
+            # self.env['spcl.enclosure'].create({
 
-    #         })
+            # })
             
 
 

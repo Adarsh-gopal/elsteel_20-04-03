@@ -195,34 +195,7 @@ class SpecialEnclosure(models.Model):
         if self.enclosure_stage_id.approve_bool:
             self.approval_line_ids = [(2,id) for id in self.approval_line_ids.ids]
             self.approval_line_ids = [(0,0,{'stage_approval_line_id':id}) for id in self.enclosure_stage_id.approval_lines.ids]
-        # print(varx,"Im varx")
-        # stage = self.env['crm.enclosure.stage'].search([])
-        # stages = list(stage)
-        # # print(stages,"Im stages")
-        # if varx in stages:
-        #     for i,j in enumerate(stages):
-        #         curr_index.append(i)
-        #         if j == varx: 
-        #             swamy = stages[(i + 1) % len(stages)]
-        #             self.enclosure_stage_id = swamy
-        #             print("\n"*15)
-        #             print(swamy.approval_lines.user_ids)
-        #             print("\n"*15)
-                    # rank = swamy.approval_lines.user_ids
-                    # for rec in swamy.approval_lines.user_ids:
-                    #     for rus in self.approval_line_ids:
-                    #         rus.user_id = [(0,0,{'id': rec.id})]
-                            # rus.write({'user_id': [(4, [rec.id])]})
-                            
-
-                    # rank = swamy.approval_lines.user_ids
-                    # for ruk in rank:
-                    #     self.approval_line_ids.user_id = ruk.id
-                    # for rec in self.approval_line_ids:
-                        # vals = [(0,0,{'user_id':  rec.user_id })] 
-
-                    # rum = self.env['spcl.enclosure.line'].create(rus.user_id)
-                    # print(rum)
+        
                         
 
     @api.model
