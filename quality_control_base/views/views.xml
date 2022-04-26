@@ -304,13 +304,26 @@
 		</record>
 
 		<!-- Characteristics -->
+		<record id="quality_characteristic_search_view"
+			model="ir.ui.view">
+			<field name="name">quality characteristic search view</field>
+			<field name="model">quality.characteristic</field>
+			<field name="arch" type="xml">
+				<search>
+					<field name="name" />
+				</search>
+			</field>
+		</record>
+
 		<record id="quality_characteristic_tree_view"
 			model="ir.ui.view">
 			<field name="name">quality characteristic tree view</field>
 			<field name="model">quality.characteristic</field>
 			<field name="arch" type="xml">
 				<tree>
-					<field name="name" />
+					<field name="name"/>
+					<field name="code" />
+					<field name="description" />
 				</tree>
 			</field>
 		</record>
@@ -352,7 +365,7 @@
 			<field name="inherit_id" ref="quality.quality_point_view_form" />
 			<field name="arch" type="xml">
 				<field name="picking_type_ids" position="after">
-					<field name="characteristic" />
+					<field name="characteristic" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>
 					<field name="test_method_id" />
 				</field>
 			</field>

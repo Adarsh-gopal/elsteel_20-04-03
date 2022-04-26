@@ -20,7 +20,7 @@ Define your stages for the quality alerts.
     'license': 'LGPL-3',
     
     'category': 'Quality',
-    'version': '15.0.0.2_Beta',
+    'version': '15.0.0.3_Beta',
     'depends': ['base','stock','product','quality','quality_control','mrp','quality_mrp','product_expiry','quality_control_worksheet'],
     'data': [
         'security/ir.model.access.csv',

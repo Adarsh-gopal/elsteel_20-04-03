@@ -64,20 +64,20 @@ class QualityPoint(models.Model):
     team_id = fields.Many2one(
         'quality.alert.team', 'Team', check_company=True,
         default=False, required=False,
-        compute='_compute_details',store=True)
+        compute='_compute_details',store=True,readonly=False)
     product_ids = fields.Many2many(
         'product.product', string='Products',
-        compute='_compute_details',store=True)
+        compute='_compute_details',store=True,readonly=False)
     product_tmpl_id = fields.Many2one(
         'product.template', 'Product', required=False, check_company=True,
         domain="[('type', 'in', ['consu', 'product']), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-        compute='_compute_details',store=True,readonly="False")
+        compute='_compute_details',store=True,readonly=False)
     picking_type_ids = fields.Many2many(
         'stock.picking.type', string='Operation Types', required=True, check_company=True,
-        compute='_compute_details',store=True,readonly="False")
+        compute='_compute_details',store=True,readonly=False)
     company_id = fields.Many2one(
         'res.company', string='Company', required=False, index=True,default=False,
-        compute='_compute_details',store=True)
+        compute='_compute_details',store=True,readonly=False)
     code = fields.Char(compute="_compute_details",store=True)
 
     @api.depends('inspection_plan_id','inspection_plan_id.team_id')
@@ -472,7 +472,7 @@ class QualityCharacteristic(models.Model):
     _name = 'quality.characteristic'
     _description = 'QualityCharacteristic'
 
-    name = fields.Char(compute='_generate_name')
+    name = fields.Char(compute='_generate_name',store=True)
     code = fields.Char()
     description = fields.Char()
 
