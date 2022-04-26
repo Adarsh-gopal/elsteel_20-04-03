@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="lead_type_cust_crm_lead_view_form" model="ir.ui.view">
+			<field name="name">lead type cust crm lead view form</field>
+	      	<field name="model">crm.lead</field>
+	      	<field name="inherit_id" ref="crm.crm_lead_view_form"/>
+	      	<field name="arch" type="xml">
+	      		<xpath expr="//header" position="inside">
+	      			<field name="state" attrs="{'invisible': [('type', '=', 'opportunity')]}" widget="statusbar" options="{'clickable': '1'}"/>
+	      		</xpath>
+		        <field name="lang_id" position="after">
+		          <field name="lead_type"/>
+		        </field>
+		        <xpath expr="//group[@name='opportunity_partner']" position="inside">
+		        	<field name="lead_type"/>
+		        </xpath>
+		        <xpath expr="//group[@name='opportunity_info']" position="inside">
+		          <field name="customer_group_id" attrs="{'invisible': [('type', '=', 'lead')]}" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>
+		          <field name="distributer_id" attrs="{'invisible': ['|',('type', '=', 'lead'),('lead_type','=','primary')],'required' : [('lead_type','=','secondary')]}" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>
+		        </xpath>
+		        <xpath expr="//group[@name='lead_info']" position="inside">
+		          <field name="customer_group_id" attrs="{'invisible': [('type', '=', 'opportunity')]}" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>
+		        </xpath>
+		        <xpath expr="//group[@name='lead_priority']" position="inside">
+		        	<field name="distributer_id" attrs="{'invisible': ['|',('type', '=', 'opportunity'),('lead_type','=','primary')],'required' : [('lead_type','=','secondary')]}" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>	        	
+		        </xpath> 
+	        </field>
+	    </record>  		
+	</data>
+</odoo>
+
