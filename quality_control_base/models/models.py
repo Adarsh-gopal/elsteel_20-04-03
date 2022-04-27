@@ -5,6 +5,11 @@ import pdb
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
+class QualityTitleWorkorder(models.Model):
+    _inherit = 'mrp.workorder'
+
+    quality_point_title = fields.Char(string="Title",related='current_quality_check_id.point_id.title')
+
 
 #Inspection Plan
 class InspectionPlan(models.Model):

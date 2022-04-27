@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
+
+		<record id="quality_title_mrp_workorder_view_form_tablet_inherited" model="ir.ui.view">
+	        <field name="name">mrp.workorder.view.form.inherit.quality.tablet.quality.title</field>
+	        <field name="model">mrp.workorder</field>
+	        <field name="inherit_id" ref="mrp_workorder.mrp_workorder_view_form_tablet"/>
+	        <field name="arch" type="xml">
+	            <xpath expr="//div[hasclass('workorder_actions')]/div[hasclass('o_workorder_bar_content')]/button[@name='action_skip']" position="after">
+	                <div class="o_row workorder_bar" style="padding-left:15px;background-color: $o-wo-tablet-bg;color:color: $o-wo-tablet-text;">
+	                    <label for='quality_point_title' string="Title:" style="font-size:20px;"/>
+	                    <field name="quality_point_title"/>
+	                </div>
+	            </xpath>
+	        </field>
+	    </record>
+	    
 		<!-- Inspection Plan -->
 		<record id="inspection_plan_tree_view" model="ir.ui.view">
 			<field name="name">inspection plan tree view</field>

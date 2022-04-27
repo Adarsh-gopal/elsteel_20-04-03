@@ -13,3 +13,7 @@ added readonly True in quality points.
 V15.0.0.3_Beta -----> V15.0.0.4_Beta(**26/04/2022**)*Anke*
 ==============================================
 added inventory_base dependence
+
+V15.0.0.4_Beta -----> V15.0.0.5_Beta(**26/04/2022**)*Anke*
+==============================================
+Added quality point title in workorder
