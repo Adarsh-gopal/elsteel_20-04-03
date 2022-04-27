@@ -13,10 +13,10 @@
     'website': "https://www.prixgen.com",
 
     'category': 'Manufacturing',
-    'version': '15.0.0.1',
+    'version': '15.0.0.3',
     'license': 'LGPL-3',
 
-    'depends': ['base','mrp','split_manufacturing'],
+    'depends': ['base','mrp','split_manufacturing','product'],
 
     'data': [
         'views/pallet_product_template.xml',
