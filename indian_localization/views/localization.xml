@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="custom_contact_local" model="ir.ui.view">
+            <field name="name">Custom Contact</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group/group/field[@name='vat']" position="after">
+                    <field name="is_indian_company" invisible="1"/>
+                </xpath>
+                <xpath expr="//form/sheet/group/group" position="inside">
+                    <field name="pan_no" attrs="{'invisible':[('is_indian_company','=',False)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='phone']" position="attributes"> 
+                    <attribute name="attrs">{'invisible':[('is_indian_company','=',False)]}</attribute>
+                </xpath>   
+                <xpath expr="//form/sheet/group/group/field[@name='vat']" position="attributes"> 
+                     <attribute name="string">GSTIN</attribute>
+                     <attribute name="attrs">{'invisible':[('is_indian_company','=',False)]}</attribute>
+                </xpath>
+            </field>
+        </record>
+        <record id="custom_company" model="ir.ui.view">
+            <field name="name">Custom Company</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">   
+                <xpath expr="//field[@name='favicon']" position="after"> 
+                     <field name='tan_no'/>
+                     <field name='factory_number'/>
+                     <field name='company_status'/>
+                     <field name='msme_code'/>
+                </xpath>
+
+                <xpath expr="//field[@name='company_registry']" position="replace"> 
+                    <field name='company_registry' string='CIN'/>
+                </xpath>
+
+                 <xpath expr="//div[@class='o_address_format']" position="after">
+                   
+                    <xpath expr="//field[@name='phone']" position="move"/>
+                    <xpath expr="//field[@name='mobile']" position="move"/>
+                    <xpath expr="//field[@name='email']" position="move"/>
+                    <xpath expr="//field[@name='website']" position="move"/>
+                    <xpath expr="//field[@name='parent_id']" position="move"/>
+
+                </xpath>
+
+                 <xpath expr="//field[@name='favicon']" position="after">
+                   <xpath expr="//field[@name='vat']" position="move"/>
+                    <xpath expr="//field[@name='company_registry']" position="move"/>
+                    <xpath expr="//field[@name='currency_id']" position="move"/>
+                
+                </xpath>
+
+
+            </field>
+        </record>
+    </data>
+</odoo>
