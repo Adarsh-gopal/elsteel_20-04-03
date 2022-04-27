@@ -111,10 +111,12 @@
                                 <td style="text-align:left">GST Reg.No.</td> 
                                 <td><span t-field="o.company_id.vat" /></td>
                             </tr>
-                            <tr>
-                                <td style="text-align:left">PAN No.</td> 
-                                <td><span t-field="o.pan_number" /></td>
-                            </tr>
+                            <t t-if="o.partner_id.pan_no">
+                                <tr>
+                                    <td style="text-align:left">PAN No.</td> 
+                                    <td><span t-field="o.partner_id.pan_no" /></td>
+                                </tr>
+                            </t>
                         </table>
                     </div>
                 </div> 
