@@ -8,9 +8,9 @@
 	        <field name="inherit_id" ref="mrp_workorder.mrp_workorder_view_form_tablet"/>
 	        <field name="arch" type="xml">
 	            <xpath expr="//div[hasclass('workorder_actions')]/div[hasclass('o_workorder_bar_content')]/button[@name='action_skip']" position="after">
-	                <div class="o_row workorder_bar" style="padding-left:15px;background-color: $o-wo-tablet-bg;color:color: $o-wo-tablet-text;">
-	                    <label for='quality_point_title' string="Title:" style="font-size:20px;"/>
-	                    <field name="quality_point_title"/>
+	                <div class="o_row o_workorder_bar_content" style="padding-left:15px;background-color: $o-wo-tablet-bg;color:color: $o-wo-tablet-text;width:100px;">
+	                    <label for='quality_point_title' string="Quality Check:" style="font-size:18px;"/>
+	                    <field name="quality_point_title" style="font-size:18px;"/>
 	                </div>
 	            </xpath>
 	        </field>

@@ -17,3 +17,7 @@ added inventory_base dependence
 V15.0.0.4_Beta -----> V15.0.0.5_Beta(**26/04/2022**)*Anke*
 ==============================================
 Added quality point title in workorder
+
+V15.0.0.5_Beta -----> V15.0.0.6_Beta(**27/04/2022**)*Anke*
+==============================================
+Changes in workorder back screen

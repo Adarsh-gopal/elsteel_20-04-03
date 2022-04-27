@@ -10,7 +10,7 @@ class QualityTitleWorkorder(models.Model):
 
     quality_point_title = fields.Char(string="Title",related='current_quality_check_id.point_id.title')
 
-
+    
 #Inspection Plan
 class InspectionPlan(models.Model):
     _name = "inspection.plan"
