@@ -47,8 +47,19 @@ changes in Sale order Source to Manufacturing order
 15.0.2.4 ------> 15.0.2.5 (03-Mar-2022) **Anke
 ================================================
 active field make default equal to True in Workcenter Category 
+added Auto MO Mark as Done posting
 
 15.0.2.5 ------> 15.0.2.6 (08-Mar-2022) **Anke
 ================================================
 1. Work order are allowing to delete even after status is finished
 2. When scheudle date is avalilable do not allow to delete the workorder
+
+15.0.2.6 ------> 15.0.2.7 (09-Apr-2022) **Anke
+================================================
+updated name in search view
+
+15.0.2.7_Beta ------> 15.0.2.8_Beta (27-Apr-2022) **Anke
+================================================
+merged changes in base and elsteel
+
+

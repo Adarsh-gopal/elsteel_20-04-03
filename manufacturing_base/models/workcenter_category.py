@@ -67,6 +67,17 @@ class workOrderCategory(models.Model):
     _name = 'wizard.outquantity'
 
     output_quantity = fields.Float(string="Quantity Output", required=True)
+    workorder_id = fields.Many2one('mrp.workorder')
+    po_demand = fields.Float(related='workorder_id.total_workorder_demand')
+    po_total_output_qty = fields.Float(related='workorder_id.total_output_quantity')
+    po_remaining_qty = fields.Float(related='workorder_id.total_workorder_remaining')
+
+    @api.onchange('workorder_id')
+    def _onchange_workorder_id(self):
+        for rec in self:
+            rec.workorder_id = self.env['mrp.workorder'].browse(self._context.get('workorder_id'))
+           
+
     
     
     def added(self):
@@ -92,10 +103,22 @@ class workOrderCategory(models.Model):
             productivity_workorder[0].output_quantity = self.output_quantity
             productivity_workorder[0].output_bool = True
 
+        
+        # if wod.production_id.workorder_ids[-1] != wod and wod.production_id.qty_producing == wod.total_output_quantity:
+        if wod.production_id.qty_producing == wod.total_output_quantity:
+            if not self.env.user.has_group('manufacturing_base.group_mo_user_validation_workorder'):
+                wod.do_finish()
+            else:
+                if wod.production_id.workorder_ids[-1] != wod:
+                    wod.do_finish()
+
+
+        # if self.env.user.has_group('manufacturing_base.group_mo_user_validation_workorder')
+
         # for timeline in timeline_obj.search(domain):
         #   timeline.output_quantity = self.output_quantity
         #   timeline.output_bool = True 
-
+        # wod.production_id.qty_producing = wod.total_output_quantity
             
         return True
     
@@ -132,13 +155,13 @@ class workOrderCategory(models.Model):
                         'view_id': self.env.ref('manufacturing_base.mrp_workorder_center_category_ZZZZ').id,
                         'view_type': 'form',
                         'res_model': 'wizard.outquantity',
+                        'context':{'workorder_id': self.id},
                         'type': 'ir.actions.act_window',
                         'target': 'new',
                         'active_ids':self.ids
                     }
         else:
             return res
-
 
     def unlink(self):
         if self.date_planned_start or self.state == 'done':

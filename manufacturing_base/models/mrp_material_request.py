@@ -25,7 +25,6 @@ class MrpMaterialRequest(models.Model):
                 'mrp_ids':[(6, 0, mr_ids.ids)],
                 'material_request_line_ids' : mr_lines
                 })
-
-
+            
             
     

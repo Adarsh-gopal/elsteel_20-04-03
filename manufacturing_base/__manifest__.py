@@ -14,13 +14,14 @@
     'website': "https://www.prixgen.com",
 
     'category': 'Manufacturing',
-    'version': '15.0.2.6',
+    'version': '15.0.2.8_Beta',
     'license': 'LGPL-3',
 
     'depends': ['mrp','base','sale','mrp_account_enterprise','mrp_subcontracting','inventory_base'],
 
     'data': [
         'security/ir.model.access.csv',
+        'security/mo_user_validation.xml',
         'views/item_group.xml',
         'views/workcenter_category.xml',
         'views/saleorder_number.xml',

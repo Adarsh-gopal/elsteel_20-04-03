@@ -54,39 +54,28 @@ class MrpProduction(models.Model):
             l.product_group_3 = l.product_id.product_tmpl_id.product_group_3.id
 
 
-    # @api.returns('self', lambda value: value.id)
-    # def copy(self, default=None): 
-    #     context = dict(self._context)
-    #     print(self.mrp_production_child_count,222222222222222222222222222222)
-    #     default = dict(default or {})
-    #     default['mrp_production_child_count'] =0
-
-    #     print(default,11111111111111111111111111111111111111111)     
-    #     return super(MrpProduction, self.with_context(context)).copy(default=default)  
-
-
-    @api.returns('self', lambda value: value.id)
-    def copy(self, default=None):
-        rec = super(MrpProduction, self).copy(default)
-        rec.procurement_group_id=False
-        return rec
-    
-
-
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
-    # serial_no = fields.Integer(string='#',compute="_compute_sl")
+    # serial_no = fields.Char(string='#',compute="_compute_sl")
 
-    # @api.depends('product_id')
+    # @api.depends('production_id')
     # def _compute_sl(self):
-    #   var = 1
-    #   for rec in self:
-    #       if rec.serial_no == 0:
-    #           rec.serial_no = var + rec.serial_no
-    #           var += 1
-    #       else:
-    #           rec.serial_no = 0
+    #     if self.production_id:
+    #         for order in self.mapped('production_id'):
+    #             number=1
+    #             for line in order.move_raw_ids:
+    #                 if line.product_id:
+    #                     line.serial_no = str(number)
+    #                     number += 1
+    #                 else:
+    #                     line.serial_no= str(number)
+    #     else:
+    #         self.serial_no= str(1)
+
+    #     self.env['mrp.production'].browse(self._context.get('params').get('id'))
+
+
 
     serial_no = fields.Char(string='#',compute="_compute_sl")
 
