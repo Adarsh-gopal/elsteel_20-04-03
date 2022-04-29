@@ -164,8 +164,9 @@ class workOrderCategory(models.Model):
             return res
 
     def unlink(self):
-        if self.date_planned_start or self.state == 'done':
-            raise UserError("Operation cannot be Deleted")
+        for rec in self:
+            if rec.date_planned_start or rec.state == 'done':
+                raise UserError("Operation cannot be Deleted")
         res = super(workOrderCategory,self).unlink()
         return res
 
