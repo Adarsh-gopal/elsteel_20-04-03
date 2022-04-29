@@ -29,6 +29,7 @@ class MrpProductionSplit(models.TransientModel):
         'Split Details', compute="_compute_details", store=True, readonly=False)
     valid_details = fields.Boolean("Valid", compute="_compute_valid_details")
 
+
     @api.depends('production_detailed_vals_ids')
     def _compute_counter(self):
         for wizard in self:
@@ -38,6 +39,10 @@ class MrpProductionSplit(models.TransientModel):
     def _compute_details(self):
         for wizard in self:
             commands = [Command.clear()]
+            # print(commands),
+            # print(Command,2222222222222)
+            # import pdb;
+            # pdb.set_trace()
             if wizard.counter < 1 or not wizard.production_id:
                 wizard.production_detailed_vals_ids = commands
                 continue
@@ -50,6 +55,7 @@ class MrpProductionSplit(models.TransientModel):
                     'user_id': wizard.production_id.user_id,
                     'date': wizard.production_id.date_planned_start,
                     'product_colour' : wizard.production_id.product_colour,
+                    'so_origin': wizard.production_id.so_origin,
 
                 }))
                 remaining_quantity = float_round(remaining_quantity - quantity, precision_rounding=wizard.product_uom_id.rounding)
@@ -58,6 +64,7 @@ class MrpProductionSplit(models.TransientModel):
                 'user_id': wizard.production_id.user_id,
                 'date': wizard.production_id.date_planned_start,
                 'product_colour' : wizard.production_id.product_colour,
+                'so_origin': wizard.production_id.so_origin,
             }))
             wizard.production_detailed_vals_ids = commands
 
@@ -71,7 +78,14 @@ class MrpProductionSplit(models.TransientModel):
                 wizard.valid_details = float_compare(wizard.product_qty, sum(wizard.production_detailed_vals_ids.mapped('quantity')), precision_rounding=wizard.product_uom_id.rounding) == 0
 
     def action_split(self):
+        # import pdb;
+        # pdb.set_trace()
         productions = self.production_id._split_productions({self.production_id: [detail.quantity for detail in self.production_detailed_vals_ids]})
+        # print(productions,"PRODUCTIONS")
+        # productions[0].copy()
+        # import pdb;
+        # pdb.set_treace()
+        # print(productions,"PRODUCTIONS")
         for production, detail in zip(productions, self.production_detailed_vals_ids):
             production.user_id = detail.user_id
             production.date_planned_start = detail.date
@@ -107,3 +121,4 @@ class MrpProductionSplitLine(models.TransientModel):
         domain=lambda self: [('groups_id', 'in', self.env.ref('mrp.group_mrp_user').id)])
     date = fields.Datetime('Schedule Date')
     product_colour = fields.Char()
+    so_origin = fields.Char()

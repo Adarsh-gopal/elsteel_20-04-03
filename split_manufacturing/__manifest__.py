@@ -13,7 +13,7 @@
     'website': "https://www.prixgen.com",
 
     'category': 'Manufacturing',
-    'version': '15.0.0.2',
+    'version': '15.0.0.3',
     'license': 'LGPL-3',
 
     'depends': ['base','mrp'],

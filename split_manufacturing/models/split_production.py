@@ -23,6 +23,14 @@ class MrpProduction(models.Model):
     """ Manufacturing Orders """
     _inherit = 'mrp.production'
 
+    # def write(self, vals):
+    #     # import pdb;
+    #     # pdb.set_trace()
+    #     print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$",vals)
+    #     res = super(MrpProduction,self).write(vals)
+    #     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",vals)
+    #     return res
+
     def action_split(self):
         self._pre_action_split_merge_hook(split=True)
         if len(self) > 1:

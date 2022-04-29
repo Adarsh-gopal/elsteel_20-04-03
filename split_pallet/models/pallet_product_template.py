@@ -51,12 +51,16 @@ class MrpProductionSplit(models.TransientModel):
                             'quantity': quantity,
                             'user_id': pallet.production_id.user_id,
                             'date': pallet.production_id.date_planned_start,
+                            'product_colour' : pallet.production_id.product_colour,
+                            'so_origin': pallet.production_id.so_origin,
                         }))
                         remaining_quantity = float_round(remaining_quantity - quantity, precision_rounding=pallet.product_uom_id.rounding)
                     commands.append(Command.create({
                         'quantity': remaining_quantity,
                         'user_id': pallet.production_id.user_id,
                         'date': pallet.production_id.date_planned_start,
+                        'product_colour' : pallet.production_id.product_colour,
+                        'so_origin': pallet.production_id.so_origin,
                     }))
                     pallet.production_detailed_vals_ids = commands
             else:
