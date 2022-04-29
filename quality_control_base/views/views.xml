@@ -13,6 +13,16 @@
 	                    <field name="quality_point_title" style="font-size:18px;"/>
 	                </div>
 	            </xpath>
+	            <xpath expr="//field[@name='note']" position="after">
+	               <div attrs="{'invisible': [('test_type', '!=', 'measure')]}" class="o_row mb8">
+	                   <label for="quality_point_norm" string="Norm:"/>
+	                   <field name="quality_point_norm"/>
+	                   <label for="quality_point_tolerance_max" string="Tolerance Max:"/>
+	                   <field name="quality_point_tolerance_max"/>
+	                   <label for="quality_point_tolerance_min" string="Tolerance Min:"/>
+	                   <field name="quality_point_tolerance_min"/>
+	               </div>
+	           </xpath>
 	        </field>
 	    </record>
 	    

@@ -21,3 +21,7 @@ Added quality point title in workorder
 V15.0.0.5_Beta -----> V15.0.0.6_Beta(**27/04/2022**)*Anke*
 ==============================================
 Changes in workorder back screen
+
+V15.0.0.6_Beta -----> V15.0.0.7_Beta(**27/04/2022**)*Anke*
+==============================================
+Added norm and tolerance fields in workorder 

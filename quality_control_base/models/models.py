@@ -8,8 +8,10 @@ from dateutil.relativedelta import relativedelta
 class QualityTitleWorkorder(models.Model):
     _inherit = 'mrp.workorder'
 
-    quality_point_title = fields.Char(string="Title",related='current_quality_check_id.point_id.title')
-
+    quality_point_title = fields.Char(string="Quality Check",related='current_quality_check_id.point_id.title')
+    quality_point_norm = fields.Float(string="Norm",related='current_quality_check_id.point_id.norm')
+    quality_point_tolerance_max = fields.Float(string="Tolerance Max",related='current_quality_check_id.point_id.tolerance_max')
+    quality_point_tolerance_min = fields.Float(string="Tolerance Min",related='current_quality_check_id.point_id.tolerance_min')
     
 #Inspection Plan
 class InspectionPlan(models.Model):
