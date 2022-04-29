@@ -148,20 +148,17 @@ class workOrderCategory(models.Model):
 
     def button_pending(self):
         res = super(workOrderCategory, self).button_pending()
-        if self._context.get('active_model') == 'mrp.workorder':
-            return {
-                        'name':_("Workorder_wizard"),
-                        'view_mode': 'form',
-                        'view_id': self.env.ref('manufacturing_base.mrp_workorder_center_category_ZZZZ').id,
-                        'view_type': 'form',
-                        'res_model': 'wizard.outquantity',
-                        'context':{'workorder_id': self.id},
-                        'type': 'ir.actions.act_window',
-                        'target': 'new',
-                        'active_ids':self.ids
-                    }
-        else:
-            return res
+        return {
+                    'name':_("Workorder_wizard"),
+                    'view_mode': 'form',
+                    'view_id': self.env.ref('manufacturing_base.mrp_workorder_center_category_ZZZZ').id,
+                    'view_type': 'form',
+                    'res_model': 'wizard.outquantity',
+                    'context':{'workorder_id': self.id},
+                    'type': 'ir.actions.act_window',
+                    'target': 'new',
+                    'active_ids':self.ids
+                }
 
     def unlink(self):
         for rec in self:
@@ -204,10 +201,6 @@ class MrpProductionOutputQty(models.Model):
                     rec.so_origin = mrp_origin.so_origin
             else:
                 rec.so_origin = rec.origin
-            # if rec.so_origin:
-            #     rec.so_origin = self[0].so_origin
-            # else:
-            #     rec.so_origin = self[0].origin
                 
     
     def update_sale_order_number(self):

@@ -14,7 +14,7 @@
     'website': "https://www.prixgen.com",
 
     'category': 'Manufacturing',
-    'version': '15.0.3.0_Beta',
+    'version': '15.0.3.1_Beta',
     'license': 'LGPL-3',
 
     'depends': ['mrp','base','sale','mrp_account_enterprise','mrp_subcontracting','inventory_base'],
