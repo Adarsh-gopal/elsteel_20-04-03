@@ -106,11 +106,14 @@ class workOrderCategory(models.Model):
         
         # if wod.production_id.workorder_ids[-1] != wod and wod.production_id.qty_producing == wod.total_output_quantity:
         if wod.production_id.qty_producing == wod.total_output_quantity:
-            if not self.env.user.has_group('manufacturing_base.group_mo_user_validation_workorder'):
-                wod.do_finish()
-            else:
+            if self.env.user.has_group('manufacturing_base.group_mo_user_validation_workorder'):
                 if wod.production_id.workorder_ids[-1] != wod:
                     wod.do_finish()
+                else:
+                    wod.action_open_manufacturing_order()
+                    wod.production_id.button_mark_done()
+            else:
+                wod.do_finish()
 
 
         # if self.env.user.has_group('manufacturing_base.group_mo_user_validation_workorder')
