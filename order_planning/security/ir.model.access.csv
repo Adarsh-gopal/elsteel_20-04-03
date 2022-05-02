@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_planning_order,order.planning,model_order_planning_line,base.group_user,1,1,1,1
+access_planning_worksheet,order.worksheet,model_planning_worksheet,base.group_user,1,1,1,1
+
+access_planning_calculation,order.calucation,model_planning_calculation,base.group_user,1,1,1,1
+access_workcenter_capacity,order.workcenter,model_workcenter_capacity,base.group_user,1,1,1,1
+access_material_capacity,order.material,model_material_capacity,base.group_user,1,1,1,1
+access_resource,order.resourcec,model_resource_capacity,base.group_user,1,1,1,1

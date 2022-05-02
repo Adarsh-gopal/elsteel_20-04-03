@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+         <record id="mrp_workcenter_view_inherit1" model="ir.ui.view">
+            <field name="name">res.company.form.inherit1</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[1]" position="after">
+                    <group name="others">
+                        <field name="planning_worksheet"/>
+                    </group>    
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+		<record id="planning_worksheet_view_inheritss" model="ir.ui.view">
+            <field name="name">planning.worksheet.form</field>
+            <field name="model">planning.worksheet</field>
+            <field name="arch" type="xml">
+            	<tree>
+            		<field name="product_id" required="1"/>
+            		<field name="company_id" required="1"/>
+            		<field name="required_qty" required="1"/>
+            		<field name="lead_time" widget="float_time" required="1"/>
+            		<field name="route" required="1"/>
+            		<button name="calculation" string="Calculation" type = "object" class = "oe_highlight"/>
+            	</tree>
+                
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_planning_calculation_form_">
+        <field name="name">planning.calculation.form.</field>
+        <field name="model">planning.calculation</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+
+                <field name='product_id' readonly="1"/>
+                <field name='plannig_sheet_id' invisible="1" readonly="1"/>
+
+             <notebook >
+                <page string="Workcenter Capacity">
+                    <field name='workcenter_capacity_ids' widget="section_and_note_one2many">
+                        <tree editable="bottom">
+                        	<field name="product_id"/>
+                        	<field name="required_qty"/>
+                        	<field name="work_center"/>
+                        	<field name="alt_work_center"  widget="many2many_tags" string="Alternate Work Centre"/>
+                        	<field name="wc_available_on"/>
+                        	<field name="lead_days"/>         
+                                              
+                
+                        </tree>
+                    </field>
+                </page>
+                <page string="Material Capacity ">
+                    <field name='material_capacity_ids' widget="section_and_note_one2many">
+                        <tree editable="bottom">
+                        	<field name="material_id"/>
+                        	<field name="required_qty"/>
+                        	<field name="onhand_qty"/>
+                        	<field name="available_qty"/>
+                        	<field name="lead_days"/>
+                                              
+                
+                        </tree>
+                    </field>
+                </page>
+                <page string="Resource Capacity">
+                    <field name='resource_capacity_ids' widget="section_and_note_one2many">
+                        <tree editable="bottom">
+                        	<field name="operator"/>
+                        	<field name="available_on"/>
+                        	<field name="lead_days"/>
+                        	         
+                                              
+                
+                        </tree>
+                    </field>
+                </page>
+             </notebook>
+         </sheet>
+     </form>
+
+            
+        </field>
+    </record>
+
+        <record model="ir.ui.view" id="view_planning_calculation_tree">
+        <field name="name">planning.calculation.tree</field>
+        <field name="model">planning.calculation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <!-- <sheet> -->
+
+                <field name='product_id'/>
+                <field name='plannig_sheet_id'/>
+
+             <!-- <notebook > -->
+                <!-- <page string="Workcenter Capacity"> -->
+                    <!-- <field name='workcenter_capacity_ids'/> -->
+                        <!-- <tree editable="bottom">
+                            <field name="bom_id"/>
+                            <field name="required_qty"/>
+                            <field name="work_center"/>
+                            <field name="alt_work_center"/>
+                            <field name="wc_available_on"/>
+                            <field name="lead_days"/>         
+                                              
+                
+                        </tree>
+                    </field>
+                </page> -->
+                <!-- <page string="Material Capacity "> -->
+                    <!-- <field name='material_capacity_ids'/ > -->
+                        <!-- <tree editable="bottom">
+                            <field name="material_id"/>
+                            <field name="required_qty"/>
+                            <field name="onhand_qty"/>
+                            <field name="available_qty"/>
+                            <field name="lead_days"/>
+                                              
+                
+                        </tree>
+                    </field>
+                </page> -->
+                <!-- <page string="Resource Capacity"> -->
+                    <!-- <field name='resource_capacity_ids'/> -->
+                        <!-- <tree editable="bottom">
+                            <field name="operator"/>
+                            <field name="available_on"/>
+                            <field name="lead_days"/>
+                                     
+                                              
+                
+                        </tree>
+                    </field>
+                </page>
+             </notebook>
+         </sheet> -->
+     </tree>
+
+            
+        </field>
+    </record>
+
+
+		<record model="ir.ui.view" id="view_product_master_form_">
+        <field name="name">product.master.form.</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+   
+
+             <notebook position="inside">
+                <page string="Planning">
+                    <field name='planning_ids' widget="section_and_note_one2many">
+                        <tree editable="bottom">
+                            
+                            <field name='company_id' options="{'no_create': True, 'no_create_edit':True}" required="1"/>
+                            <field name='route_id' options="{'no_create': True, 'no_create_edit':True}" required="1"/>
+                            <field name='activate'/>
+                           
+                            
+                
+                        </tree>
+                    </field>
+                </page>
+             </notebook>
+
+            
+        </field>
+    </record>
+     <record model="ir.ui.view" id="stock_rule_production">
+            <field name="name">stock.rule.form</field>
+            <field name="model">stock.rule</field>
+            <field name="inherit_id" ref="stock.view_stock_rule_form"/>
+            <field name="arch" type="xml">
+                   <xpath expr="//group[@name='propagation_group']" position="after">
+                    <group name="others" string="Others" attrs="{'invisible': [('action', '!=', 'buy')]}">
+                    	<field name="vendor_id" options="{'no_create': True, 'no_create_edit':True}"/>
+                    </group>	
+                </xpath>
+            </field>
+        </record>
+
+         <record id="mrp_workcenter_view_inherit1" model="ir.ui.view">
+            <field name="name">mrp.workcenter.form.inherit1</field>
+            <field name="model">mrp.workcenter</field>
+            <field name="inherit_id" ref="mrp.mrp_workcenter_view"/>
+            <field name="arch" type="xml">
+                <group name="capacity" position="inside">
+                    <field name="capacity_wt" />
+                </group>
+            </field>
+        </record>
+
+        <record id="planning_worksheet_view_inherit" model="ir.ui.view">
+            <field name="name">planning.worksheet.form</field>
+            <field name="model">planning.worksheet</field>
+            <field name="arch" type="xml">
+            	<tree create="0">
+                    <field name="source_id"/>
+            		<field name="product_id" widget="many2one_clickable" required="1"/>
+            		<field name="company_id" required="1"/>
+            		<field name="required_qty" required="1"/>
+            		<field name="lead_time" widget="float_time" required="1"/>
+            		<field name="route" required="1"/>
+            		<button name="calculation" string="Calculation" type = "object" class = "oe_highlight"/>
+            	</tree>
+                
+            </field>
+        </record>
+
+        
+
+        <record id="res_config_settings_view_form1" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.sale.</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div class="col-12 col-lg-6 o_setting_box" id="proforma_configuration" position="after">
+                <div class="col-12 col-lg-6 o_setting_box" id="no_edit_orders">
+                            <div class="o_setting_left_pane">
+                                <field name="planning_worksheet"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="planning_worksheet"/>
+                                <div class="text-muted">
+                                    Planning Worksheet
+                                </div>
+                            </div>
+                        </div>
+        </div>
+    
+        </field>
+    </record>
+
+    <record id="sale_order_view_inherit1" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit1</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <field name="payment_term_id" position="after">
+                    <field name="worksheet_visible" invisible="1"/>
+                </field>
+                <xpath expr = "// button[@name = 'action_quotation_send']" position = "after"> <button string = " EXECUTE WORKSHEET" type = "object" class = "oe_highlight" name = "action_execute_worksheet" attrs="{'invisible': [('state', '!=','draft')]}"/> </xpath>
+
+				<xpath expr="/form/sheet/div[@name='button_box']/button[@name='preview_sale_order']" position="after">
+				<button name="planning_worksheet" string="Planning Worksheet" type="object" class="oe_stat_button" icon="fa-archive" attrs="{'invisible': [('worksheet_visible', '=', False)]}"/>
+				</xpath>
+            </field>
+        </record>
+
+
+	</data>
+</odoo>
