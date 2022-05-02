@@ -1,0 +1,100 @@
+<odoo>
+    <data>
+
+        <record id="sh_pol_sale_line_tree_view_inherit" model="ir.ui.view">
+            <field name="name">sale Order Line Tree</field>
+            <field name="model">sale.order.line</field>
+            <field name="arch" type="xml">
+                <tree create="false">
+                    <field name="z_client_order_ref" optional="show"/>
+                    <field name="order_id" string="Order"/>
+                    <field name="product_id"/>
+                    <field name="product_catag_id" optional="show"/>
+                    <field name="name" optional='show'/>
+                    <field name="z_partner_id"/>
+                    <!-- <field name="date_planned"/> -->
+                    <field name="product_uom_qty" string="Quantity"/>
+                    <field name="qty_delivered"/>
+                    <field name="qty_invoiced"/>
+                    <field name="z_remaining_qty"/>
+                    <field name="z_pending_order_value"/>
+                    <field name="customer_lead"/>
+                    <field name="price_unit"/>
+                    <field name="z_currency_id" optional='show'/>
+                    <field name="tax_id" widget="many2many_tags" optional='show'/>
+                    <field name="price_subtotal"/>
+                    <field name="z_status" decoration-info="z_status == 'Pending for Invoice'"
+                           decoration-danger="z_status == 'Cancel'" decoration-success="z_status == 'Pending Order'"/>
+                    <!-- <field name="open_close_so" optional='show'/> -->
+                    <field name="c_order_date" optional='show'/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="sh_pol_sale_line_search_view_inherit" model="ir.ui.view">
+            <field name="name">sale Order Line Tree</field>
+            <field name="model">sale.order.line</field>
+            <field name="inherit_id" ref="sale.view_sales_order_line_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <field name="product_group_1"/>
+                    <field name="product_group_2"/>
+                    <field name="product_group_3"/>
+                    <field name="item_group"/>
+                    <separator orientation="vertical"/>
+                    <filter string="Order Confirm Date" name="filter_create_date" date="c_order_date"/>
+                   <!--  <separator/>
+                    <filter string="OPEN SO" name="open_so" domain="[('open_close_so', '=', 'open_so' )]"/>
+                    <filter string="CLOSE SO" name="close_so" domain="[('open_close_so', '=', 'close_so' )]"/> -->
+                </xpath>
+                <filter name='product' position='after'>
+                    <filter string="Status" name="z_status" domain="[]" context="{'group_by':'z_status'}"/>
+                    <filter string="Product Group 1" name="product_group_1" domain="[]" context="{'group_by':'product_group_1'}"/>
+                    <filter string="Product Group 2" name="product_group_1" domain="[]" context="{'group_by':'product_group_2'}"/>
+                    <filter string="Product Group 3" name="product_group_1" domain="[]" context="{'group_by':'product_group_3'}"/>
+                    <filter string="Item Group" name="item_group" domain="[]" context="{'group_by':'item_group'}"/>
+                </filter>
+                <filter name='z_status' position='after'>
+                    <filter string="Product Category" name="product_catag_id" domain="[]"
+                            context="{'group_by':'product_catag_id'}"/>
+                    <!-- <filter string="Order Status" name="open_close_so" context="{'group_by':'open_close_so'}"/> -->
+                    <!--<separator orientation="vertical"/>-->
+                    <filter string="Order Confirm Date" name="c_order_date" context="{'group_by':'c_order_date'}"/>
+                </filter>
+            </field>
+        </record>
+
+
+        <record id="sh_action_sale_order_lines" model="ir.actions.act_window">
+            <field name="name">SO Status Report</field>
+            <field name="res_model">sale.order.line</field>
+            <field name="type">ir.actions.act_window</field>
+            <!-- <field name="view_type">form</field> -->
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+            <field name="domain">[('state','in',('sale','done','cancel'))]</field>
+            <field name="view_id" ref="sh_pol_sale_line_tree_view_inherit"/>
+        </record>
+
+
+        <menuitem id="sh_sol_order_line" name="SO Status Report" action="sh_action_sale_order_lines"
+                  parent="sale.menu_sale_report"/>
+
+	<record id="ir_action_update_sol_groups"
+		model="ir.actions.server">
+		<field name="name">Update Sale Order Line</field>
+		<field name="model_id" ref="model_sale_order" />
+		<field name="binding_model_id" ref="model_sale_order" />
+		<field name="binding_view_types">list</field>
+		<field name="state">code</field>
+		<field name="code">
+			if records:
+			    action = records.update_sol_groups()
+		</field>
+	</record>
+
+        <!-- <menuitem id="sh_sale_report" name="Purchase Analysis" parent="sale.menu_sale_report" sequence="99"
+           groups="purchase.group_purchase_manager" action="purchase.action_purchase_order_report_all"/> -->
+
+    </data>
+</odoo>
