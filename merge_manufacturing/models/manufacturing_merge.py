@@ -50,9 +50,20 @@ class MrpProduction(models.Model):
 
         
         saleorder = set([production.so_origin for production in self])
-        so_origin = saleorder.pop()
-       
-
+        if len(saleorder) == 2:
+            so_origin = list(saleorder)[1]
+        else:
+            so_origin = saleorder.pop()
+        
+        
+        
+        productcolour = set([production.product_colour for production in self])
+        if len(productcolour) == 2:
+            product_colour = list(productcolour)[1]
+        else:
+            product_colour = productcolour.pop()
+        
+ 
         production = self.env['mrp.production'].create({
             'product_id': product_id.id,
             'bom_id': bom_id.id,
@@ -62,8 +73,10 @@ class MrpProduction(models.Model):
             'user_id': user_id.id,
             'origin': ",".join(sorted([production.name for production in self])),
             'so_origin' : so_origin,
+            'product_colour' : product_colour,
         })
         production.so_origin = so_origin
+        production.product_colour = product_colour
         self.env['stock.move'].create(production._get_moves_raw_values())
         self.env['stock.move'].create(production._get_moves_finished_values())
         production._create_workorder()
