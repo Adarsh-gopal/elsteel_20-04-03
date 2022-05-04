@@ -27,25 +27,34 @@
 
                 <field name='product_id' readonly="1"/>
                 <field name='plannig_sheet_id' invisible="1" readonly="1"/>
+                <group>
+                <div>
+                <field name="lead_days" class="oe_inline text-left"/> Day
+                <!-- <span class="font-weight-bold">Day</span> -->
+                <field name="lead_hours" class="oe_inline text-left"/> Hours
+                <!-- <span class="font-weight-bold">Hours</span> -->
+                </div>
+            </group>
 
              <notebook >
                 <page string="Workcenter Capacity">
-                    <field name='workcenter_capacity_ids' widget="section_and_note_one2many">
-                        <tree editable="bottom">
+                    <field name='workcenter_capacity_ids' widget="section_and_note_one2many" readonly='1'>
+                        <tree>
                         	<field name="product_id"/>
                         	<field name="required_qty"/>
                         	<field name="work_center"/>
                         	<field name="alt_work_center"  widget="many2many_tags" string="Alternate Work Centre"/>
                         	<field name="wc_available_on"/>
-                        	<field name="lead_days"/>         
+                        	<field name="lead_days"/> 
+                            <field name="lead_hours"/>        
                                               
                 
                         </tree>
                     </field>
                 </page>
                 <page string="Material Capacity ">
-                    <field name='material_capacity_ids' widget="section_and_note_one2many">
-                        <tree editable="bottom">
+                    <field name='material_capacity_ids' widget="section_and_note_one2many" readonly='1'>
+                        <tree>
                         	<field name="material_id"/>
                         	<field name="required_qty"/>
                         	<field name="onhand_qty"/>
@@ -57,8 +66,8 @@
                     </field>
                 </page>
                 <page string="Resource Capacity">
-                    <field name='resource_capacity_ids' widget="section_and_note_one2many">
-                        <tree editable="bottom">
+                    <field name='resource_capacity_ids' widget="section_and_note_one2many" readonly='1'>
+                        <tree>
                         	<field name="operator"/>
                         	<field name="available_on"/>
                         	<field name="lead_days"/>

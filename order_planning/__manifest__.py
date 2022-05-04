@@ -13,7 +13,7 @@
     'website': "https://www.prixgen.com",
 
     'category': 'Sales',
-    'version': '15.0.0.4',
+    'version': '15.0.0.6',
     'license': 'LGPL-3',
 
     'depends': ['base','sale','product','stock','mrp','web'],

@@ -4,7 +4,7 @@
 
         <t t-extend="ListView.buttons">
 
-            <t  t-jquery="button.o_list_button_add" t-operation="after">
+            <t  t-jquery="button.o_list_export_xlsx" t-operation="after">
 
                 <button t-if="widget.modelName == 'planning.worksheet'" type="button" class="btn btn-secondary btn-sm oe_filter_button" accesskey="f">
 

@@ -59,6 +59,14 @@ class PlanningCalculation(models.Model):
     workcenter_capacity_ids=fields.One2many('workcenter.capacity','planning_workcenter_id',string="Work Center Capacity")    
     material_capacity_ids=fields.One2many('material.capacity','planning_material_id',string="Material Center Capacity")    
     resource_capacity_ids=fields.One2many('resource.capacity','planning_resource_id',string="Resource Center Capacity")    
+    lead_hours  = fields.Integer(string="Lead Hours",compute='_compute_lead_day_hours')
+    lead_days = fields.Integer(string="Lead Days",compute='_compute_lead_day_hours')
+    
+    # @api.onchange('material_capacity_ids')    
+    def _compute_lead_day_hours(self):
+        for rec in self.workcenter_capacity_ids:
+            self.lead_days = self.lead_days + rec.lead_days
+            self.lead_hours = self.lead_hours + rec.lead_hours
 
     def generate_all_bom(self):
         if self.product_id and self.plannig_sheet_id:
@@ -95,7 +103,7 @@ class WorkCenterCapacity(models.Model):
     alt_work_center=fields.Many2many('mrp.workcenter',relation='mrp_workcenter_alt',string="Alternate Work Centre")
     wc_available_on= fields.Datetime(string='W/c available on', default=fields.Datetime.now)
     lead_days=fields.Integer(string="Lead Days")
-
+    lead_hours=fields.Integer(string="Lead Hours")
 
 
 
@@ -187,11 +195,18 @@ class PlanningWorksheet(models.Model):
                                 'product_id':plann_sheet.product_id.id,
                                 'material_capacity_ids':[(0,0,lines_1) for lines_1 in comp_dict.get('without_bom')],
                                 'workcenter_capacity_ids':[(0,0,lines_2) for lines_2 in comp_dict.get('with_bom')]}
-                    plann_obj = self.env['planning.calculation'].search([('plannig_sheet_id','=',plann_sheet.id)])
-                    if not plann_obj:
+                    plann_cal_obj = self.env['planning.calculation'].search([('plannig_sheet_id','=',plann_sheet.id)])
+                    if not plann_cal_obj:
                         pln_cal= self.env['planning.calculation'].create(vals_dict)
                     else:
-                       plann_obj.write(vals_dict)
+                        workcenter_capacity = self.env['workcenter.capacity'].search([('planning_workcenter_id','=',plann_cal_obj.id)])
+                        material_capacity = self.env['material.capacity'].search([('planning_material_id','=',plann_cal_obj.id)])
+                        print(workcenter_capacity,material_capacity,44444444444444444)
+                        material_capacity.unlink()
+                        workcenter_capacity.unlink()
+                        plann_cal_obj.write(vals_dict) 
+                       # plann_cal_obj.write(vals_dict)
+
     
     def _fetch_components_product(self,product_id,with_bom,without_bom,company_id,planned_qty,comp_qty):
         bom_id = product_id.product_tmpl_id.bom_ids.filtered(lambda x: x.company_id.id == company_id.id )
@@ -205,7 +220,8 @@ class PlanningWorksheet(models.Model):
                             'work_center':rec.workcenter_id.id,
                             'alt_work_center':[(6,0,rec.workcenter_id.alternative_workcenter_ids.ids)] if rec.workcenter_id.alternative_workcenter_ids else False,
                             'wc_available_on': datetime.datetime.now()+ relativedelta(minutes=days_date[0]+extra_minutes) if days_date[0]+extra_minutes < 1440 else datetime.datetime.now() + relativedelta(minutes=sorted(days_date)[0]+extra_minutes),
-                            'lead_days': (days_date[0]+extra_minutes/(60*24)) if days_date[0]+extra_minutes < 1440 else (sorted(days_date)[0]+extra_minutes)/(60*24)})                    
+                            'lead_days': (days_date[0]+extra_minutes/(60*24)) if days_date[0]+extra_minutes < 1440 else (sorted(days_date)[0]+extra_minutes)/(60*24),
+                            'lead_hours':((days_date[0]+extra_minutes%(60*24))/60) if days_date[0]+extra_minutes < 1440 else ((sorted(days_date)[0]+extra_minutes)%(60*24))/60})                    
             else:
                 days_date = self._lead_days_calculate(bom_id.operation_ids)
                 extra_minutes = (bom_id.operation_ids.time_cycle * planned_qty)
@@ -214,7 +230,8 @@ class PlanningWorksheet(models.Model):
                             'work_center':bom_id.operation_ids.workcenter_id.id,
                             'alt_work_center':[(6,0,bom_id.operation_ids.workcenter_id.alternative_workcenter_ids.ids)] if bom_id.operation_ids.workcenter_id.alternative_workcenter_ids else False,
                             'wc_available_on': datetime.datetime.now()+ relativedelta(minutes=days_date[0]+extra_minutes) if days_date[0]+extra_minutes < 1440 else datetime.datetime.now() + relativedelta(minutes=sorted(days_date)[0]+extra_minutes),
-                            'lead_days': (days_date[0]+extra_minutes/(60*24) if days_date[0]+extra_minutes < 1440 else (sorted(days_date)[0]+extra_minutes)/(60*24)) })
+                            'lead_days': (days_date[0]+extra_minutes/(60*24) if days_date[0]+extra_minutes < 1440 else (sorted(days_date)[0]+extra_minutes)/(60*24)),
+                            'lead_hours':((days_date[0]+extra_minutes%(60*24))/60) if days_date[0]+extra_minutes < 1440 else ((sorted(days_date)[0]+extra_minutes)%(60*24))/60})
             if bom_id.bom_line_ids:
                 for rec in bom_id.bom_line_ids:
                                         self._fetch_components_product(rec.product_id,with_bom,without_bom,company_id,planned_qty,rec.product_qty)
