@@ -176,7 +176,7 @@ class PlanningWorksheet(models.Model):
         for plann_sheet in plann_sheets:
             without_bom = []
             with_bom =[]
-            bom_id = plann_sheet.product_id.product_tmpl_id.bom_ids
+            bom_id = plann_sheet.product_id.product_tmpl_id.bom_ids.filtered(lambda x: x.company_id.id == plann_sheet.company_id.id )
             if bom_id.company_id == plann_sheet.company_id:
                 bom_lines = bom_id.bom_line_ids
                 if bom_lines:
@@ -192,64 +192,111 @@ class PlanningWorksheet(models.Model):
                         pln_cal= self.env['planning.calculation'].create(vals_dict)
                     else:
                        plann_obj.write(vals_dict)
-
-    def _lead_days_calculate(self,rec):
-        lead_days = []
-        avialabe_date = []
-        if rec.workcenter_id.order_ids[-1].date_planned_finished == False or rec.workcenter_id.order_ids[-1].date_planned_finished <= datetime.datetime.now():
-            if rec.workcenter_id.order_ids[-1].date_planned_finished == False:
-                lead_days.append(0)
-                return  lead_days
-            lead_days.append((rec.workcenter_id.order_ids[-1].date_planned_finished - datetime.datetime.now()).total_seconds() / 60)
-            return  lead_days
-        else:
-            lead_days.append((rec.workcenter_id.order_ids[-1].date_planned_finished - datetime.datetime.now()).total_seconds() / 60)
-            if rec.workcenter_id.alternative_workcenter_ids:
-                print(lead_days,88888888888811111111199999999)        
-                for availability in rec.workcenter_id.alternative_workcenter_ids:
-                    print(lead_days,11111119998888888888)
-                    if availability.order_ids[-1].date_planned_finished == False or availability.order_ids[-1].date_planned_finished <= datetime.datetime.now():
-                        if availability.order_ids[-1].date_planned_finished == False:
-                            lead_days.append(0)
-                            return  lead_days
-                        lead_days.append((availability.order_ids[-1].date_planned_finished - datetime.datetime.now()).total_seconds() / 60)
-                        return lead_days
-                    lead_days.append((availability.order_ids[-1].date_planned_finished - datetime.datetime.now()).total_seconds() / 60)       
-        return lead_days
-
+    
     def _fetch_components_product(self,product_id,with_bom,without_bom,company_id,planned_qty,comp_qty):
-        bom_id = product_id.product_tmpl_id.bom_ids
+        bom_id = product_id.product_tmpl_id.bom_ids.filtered(lambda x: x.company_id.id == company_id.id )
         if bom_id.company_id == company_id:
             if len(bom_id.operation_ids) > 1:
                 for rec in bom_id.operation_ids:
                     days_date = self._lead_days_calculate(rec)
-                    print(type(days_date),99999999999988888888888888)
+                    extra_minutes = (rec.time_cycle * planned_qty)
                     with_bom.append({'product_id':product_id.id,
                             'required_qty':(planned_qty*comp_qty),
                             'work_center':rec.workcenter_id.id,
                             'alt_work_center':[(6,0,rec.workcenter_id.alternative_workcenter_ids.ids)] if rec.workcenter_id.alternative_workcenter_ids else False,
-                            'wc_available_on': datetime.datetime.now()+ relativedelta(minutes=days_date[0]) if days_date[0] < 1440 else datetime.datetime.now() + relativedelta(minutes=sorted(days_date)[0]),
-                            'lead_days': (days_date[0]/(60*24)) if days_date[0] < 1440 else (sorted(days_date)[0])/(60*24)})
-
+                            'wc_available_on': datetime.datetime.now()+ relativedelta(minutes=days_date[0]+extra_minutes) if days_date[0]+extra_minutes < 1440 else datetime.datetime.now() + relativedelta(minutes=sorted(days_date)[0]+extra_minutes),
+                            'lead_days': (days_date[0]+extra_minutes/(60*24)) if days_date[0]+extra_minutes < 1440 else (sorted(days_date)[0]+extra_minutes)/(60*24)})                    
             else:
                 days_date = self._lead_days_calculate(bom_id.operation_ids)
-                print(sorted(days_date),888888888888899999999999999)
+                extra_minutes = (bom_id.operation_ids.time_cycle * planned_qty)
                 with_bom.append({'product_id':product_id.id,
                             'required_qty':(planned_qty*comp_qty),
                             'work_center':bom_id.operation_ids.workcenter_id.id,
                             'alt_work_center':[(6,0,bom_id.operation_ids.workcenter_id.alternative_workcenter_ids.ids)] if bom_id.operation_ids.workcenter_id.alternative_workcenter_ids else False,
-                            'wc_available_on': datetime.datetime.now()+ relativedelta(minutes=days_date[0]) if days_date[0] < 1440 else datetime.datetime.now() + relativedelta(minutes=sorted(days_date)[0]),
-                            'lead_days': (days_date[0]/(60*24) if days_date[0] < 1440 else (sorted(days_date)[0])/(60*24)) })
-            bom_lines = product_id.product_tmpl_id.bom_ids.bom_line_ids
-            if bom_lines:
-                for rec in bom_lines:
-                    self._fetch_components_product(rec.product_id,with_bom,without_bom,company_id,planned_qty,rec.product_qty)
+                            'wc_available_on': datetime.datetime.now()+ relativedelta(minutes=days_date[0]+extra_minutes) if days_date[0]+extra_minutes < 1440 else datetime.datetime.now() + relativedelta(minutes=sorted(days_date)[0]+extra_minutes),
+                            'lead_days': (days_date[0]+extra_minutes/(60*24) if days_date[0]+extra_minutes < 1440 else (sorted(days_date)[0]+extra_minutes)/(60*24)) })
+            if bom_id.bom_line_ids:
+                for rec in bom_id.bom_line_ids:
+                                        self._fetch_components_product(rec.product_id,with_bom,without_bom,company_id,planned_qty,rec.product_qty)
         else:
+            onhand_qty = 0
+            available_qty = 0
+            for rec in product_id.stock_quant_ids.filtered(lambda x: x.company_id.id == company_id.id ):
+                if rec.quantity > 0 and rec.available_quantity:
+                    print(rec,222222222222,rec.company_id,rec.quantity,rec.available_quantity)
+                    onhand_qty = onhand_qty + rec.quantity
+                    available_qty = available_qty + rec.available_quantity
+            lead_days = 0
+            
+            if (planned_qty*comp_qty) > available_qty:
+                po_line = self.env['purchase.order.line'].search([('product_id','=',product_id.id),('state','=','purchase')],order='date_planned desc')
+                if po_line: 
+                    if po_line.order_id:   
+                        print(po_line,3333333333333333)
+                        if len(po_line[0].order_id.picking_ids) > 1:
+                            picking = self.env['stock.picking'].search(['purchase_id','=',po_line[0].id],orderby='scheduled_date desc')
+                            scheduled_date = picking[0].scheduled_date
+                        else:
+                            scheduled_date = po_line[0].order_id.picking_ids[0].scheduled_date
+                        minutes_day = ((scheduled_date - datetime.datetime.now()).total_seconds() / 60)
+                        lead_days = (minutes_day/(60*24))
+
             without_bom.append({'material_id':product_id.id,
-                                'required_qty':(planned_qty*comp_qty)})
+                                'required_qty':(planned_qty*comp_qty),
+                                'onhand_qty': onhand_qty,
+                                'available_qty':available_qty,
+                                'lead_days':lead_days if lead_days < 0 else round(lead_days)})
 
         return {'without_bom':without_bom,
-                'with_bom':with_bom} 
+                'with_bom':with_bom}
+
+    # def _lead_days_calculate(self,rec):
+    #     lead_days = []
+    #     avialabe_date = []
+    #     if rec.workcenter_id.order_ids[-1].date_planned_finished == False or rec.workcenter_id.order_ids[-1].date_planned_finished <= datetime.datetime.now():
+    #         if rec.workcenter_id.order_ids[-1].date_planned_finished == False:
+    #             lead_days.append(0)
+    #             return  lead_days
+    #         lead_days.append((rec.workcenter_id.order_ids[-1].date_planned_finished - datetime.datetime.now()).total_seconds() / 60)
+    #         return  lead_days
+    #     else:
+    #         lead_days.append((rec.workcenter_id.order_ids[-1].date_planned_finished - datetime.datetime.now()).total_seconds() / 60)
+    #         if rec.workcenter_id.alternative_workcenter_ids:
+    #             print(lead_days,88888888888811111111199999999)        
+    #             for availability in rec.workcenter_id.alternative_workcenter_ids:
+    #                 print(lead_days,11111119998888888888)
+    #                 print(availability.order_ids[-1].date_planned_finished,1112211112221122211222)
+    #                 if availability.order_ids[-1].date_planned_finished == False or availability.order_ids[-1].date_planned_finished <= datetime.datetime.now():
+    #                     if availability.order_ids[-1].date_planned_finished == False:
+    #                         lead_days.append(0)
+    #                         return  lead_days
+    #                     lead_days.append((availability.order_ids[-1].date_planned_finished - datetime.datetime.now()).total_seconds() / 60)
+    #                     return lead_days
+    #                 lead_days.append((availability.order_ids[-1].date_planned_finished - datetime.datetime.now()).total_seconds() / 60)       
+    #     return lead_days
+
+    def _lead_days_calculate(self,rec):
+        lead_days = []
+        avialabe_date = []
+        select = """SELECT MAX(date_planned_finished) from mrp_workorder where workcenter_id = {}; """.format(rec.workcenter_id.id)
+        self.env.cr.execute(select)
+        results = self.env.cr.fetchone()
+        if results[0] == None or results[0] <= datetime.datetime.now():
+            lead_days.append(0)
+            return  lead_days
+        else:
+            lead_days.append((results[0] - datetime.datetime.now()).total_seconds() / 60)
+            if rec.workcenter_id.alternative_workcenter_ids:
+                for availability in rec.workcenter_id.alternative_workcenter_ids:
+                    select =  """SELECT MAX(date_planned_finished) from mrp_workorder where workcenter_id = {};  """.format(availability.id)
+                    self.env.cr.execute(select)
+                    results = self.env.cr.fetchone()
+                    if results[0] == None or results[0] <= datetime.datetime.now():
+                        lead_days.append(0)
+                        return  lead_days
+                    lead_days.append((results[0] - datetime.datetime.now()).total_seconds() / 60)  
+                    return lead_days     
+        return lead_days
 
     def unlink_records(self):
         plann_sheets = self.env['planning.worksheet'].search([('source_id','=',self.id)])
@@ -264,9 +311,10 @@ class PlanningWorksheet(models.Model):
 class SaleMaster(models.Model):
     _inherit = "sale.order"
 
+    plann_sheet = fields.Boolean(related='company_id.planning_worksheet')
+
 
     worksheet_visible = fields.Boolean()
-
 
     def action_execute_worksheet(self):
         for rec in self.order_line:

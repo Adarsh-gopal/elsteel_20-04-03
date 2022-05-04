@@ -233,8 +233,9 @@
             <field name="arch" type="xml">
                 <field name="payment_term_id" position="after">
                     <field name="worksheet_visible" invisible="1"/>
+                    <field name="plann_sheet" invisible="1" readonly="1"/>
                 </field>
-                <xpath expr = "// button[@name = 'action_quotation_send']" position = "after"> <button string = " EXECUTE WORKSHEET" type = "object" class = "oe_highlight" name = "action_execute_worksheet" attrs="{'invisible': [('state', '!=','draft')]}"/> </xpath>
+                <xpath expr = "// button[@name = 'action_quotation_send']" position = "after"> <button string = " EXECUTE WORKSHEET" type = "object" class = "oe_highlight" name = "action_execute_worksheet" attrs="{'invisible': ['|',('state', '!=','draft'),('plann_sheet', '!=',True)]}"/> </xpath>
 
 				<xpath expr="/form/sheet/div[@name='button_box']/button[@name='preview_sale_order']" position="after">
 				<button name="planning_worksheet" string="Planning Worksheet" type="object" class="oe_stat_button" icon="fa-archive" attrs="{'invisible': [('worksheet_visible', '=', False)]}"/>
