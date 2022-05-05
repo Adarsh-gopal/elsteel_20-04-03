@@ -1,16 +1,12 @@
 
 {
     'name': 'Elsteel India Purchase Report',
-    'version': '15.0.0.2',
-    'summary': 'This apps helps create/generate automatic sequence of lead',
+    'version': '15.0.0.3',
+    'summary': '',
     'author': 'Prixgen Tech Solutions Pvt. Ltd.',
     'company': 'Prixgen Tech Solutions Pvt. Ltd.',
     'website': 'https://www.prixgen.com',
-    'description':"""
-     Automatic Sequance on Lead , Pipeline and Opportunity \n 
-     Sequance for Lead ,Opportunity and Pipeline \n
-     Auto numbering on lead, Opportunity and Pipeline\n     
-     Product Mapping""", 
+    'description':"""""", 
     'license': 'LGPL-3',
     'depends':['base','purchase','web'],
     'data':[

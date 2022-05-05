@@ -115,7 +115,7 @@
                                 </tr>
                                 <tr>
                                     <td style="text-align:left">PAN No.</td> 
-                                    <td><span t-field="o.pan_number" /></td>
+                                    <td><span t-field="o.partner_id.pan_no" /></td>
                                 </tr>
                             </table>
                         </div>
