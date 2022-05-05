@@ -127,7 +127,9 @@
                                     <td style="text-align:left;width:68px">Document Date</td> 
                                     <td style="text-align:left;width:95px">
                                         <!-- <span style="text-align:left" t-field="o.date_approve" /> -->
-                                        <span style="text-align:left;width:95px" t-esc="o.date_approve.strftime('%d-%m-%Y')"/>
+                                        <t t-if="o.date_approve">
+                                            <span style="text-align:left;width:95px" t-esc="o.date_approve.strftime('%d-%m-%Y')"/>
+                                        </t>
                                     </td>
                                 </tr>
                                 <tr>      
@@ -140,7 +142,9 @@
                                 </tr>
                                 <tr>
                                     <td>Delivery Date</td> 
-                                    <td><span style="text-align:left"  t-esc="o.date_planned.strftime('%d-%m-%Y')"/></td>
+                                    <t t-if="o.date_planned">
+                                        <td><span style="text-align:left"  t-esc="o.date_planned.strftime('%d-%m-%Y')"/></td>
+                                    </t>
                                 </tr>
                             </table>    
                         </div>

@@ -1,7 +1,7 @@
 
 {
     'name': 'Elsteel India Purchase Report',
-    'version': '15.0.0.3',
+    'version': '15.0.0.4',
     'summary': '',
     'author': 'Prixgen Tech Solutions Pvt. Ltd.',
     'company': 'Prixgen Tech Solutions Pvt. Ltd.',
