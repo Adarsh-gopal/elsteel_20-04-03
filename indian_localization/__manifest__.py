@@ -19,7 +19,7 @@
     'website': "https://www.prixgen.com",
 
     'category': 'Customization',
-    'version': '15.0.0.2_Beta',
+    'version': '15.0.0.3_Beta',
 
     'depends': ['base'],
 

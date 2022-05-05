@@ -7,10 +7,8 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//form/sheet/group/group/field[@name='vat']" position="after">
-                    <field name="is_indian_company" invisible="1"/>
-                </xpath>
-                <xpath expr="//form/sheet/group/group" position="inside">
                     <field name="pan_no" attrs="{'invisible':[('is_indian_company','=',False)]}"/>
+                    <field name="is_indian_company" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='phone']" position="attributes"> 
                     <attribute name="attrs">{'invisible':[('is_indian_company','=',False)]}</attribute>
@@ -26,11 +24,12 @@
             <field name="model">res.company</field>
             <field name="inherit_id" ref="base.view_company_form"/>
             <field name="arch" type="xml">   
-                <xpath expr="//field[@name='favicon']" position="after"> 
-                     <field name='tan_no'/>
-                     <field name='factory_number'/>
-                     <field name='company_status'/>
-                     <field name='msme_code'/>
+                <xpath expr="//field[@name='favicon']" position="after">
+                     <field name="is_indian_company" invisible="1"/>    
+                     <field name='tan_no' attrs="{'invisible':[('is_indian_company','=',False)]}"/>
+                     <field name='factory_number' attrs="{'invisible':[('is_indian_company','=',False)]}"/>
+                     <field name='company_status' attrs="{'invisible':[('is_indian_company','=',False)]}"/>
+                     <field name='msme_code' attrs="{'invisible':[('is_indian_company','=',False)]}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='company_registry']" position="replace"> 
@@ -52,6 +51,9 @@
                     <xpath expr="//field[@name='company_registry']" position="move"/>
                     <xpath expr="//field[@name='currency_id']" position="move"/>
                 
+                </xpath>
+                <xpath expr="//field[@name='vat']" position="attributes">
+                    <attribute name="attrs">{'invisible':[('is_indian_company','=',False)]}</attribute>
                 </xpath>
 
 

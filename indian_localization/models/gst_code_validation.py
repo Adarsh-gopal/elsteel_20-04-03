@@ -13,12 +13,12 @@ class Partner(models.Model):
 
     is_indian_company = fields.Boolean(compute="check_company_id")
     pan_no = fields.Char(string="PAN No",size=10,compute='_get_pan_no',store=True,inverse='_set_pan_no')
-    company_id = fields.Many2one('res.company',string="Company",default=lambda self: self.env.company.id, index=1)
+    
 
     @api.depends('company_id')
     def check_company_id(self):
         for rec in self:
-            if self.company_id.country_id.name == 'India':
+            if self.env.company.country_id.name == 'India':
                 rec.is_indian_company = True
             else:
                 rec.is_indian_company = False
