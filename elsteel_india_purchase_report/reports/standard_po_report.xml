@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+
+    <record id="elsteel_standard_report_format" model="report.paperformat">
+        <field name="name">Elsteel Standard Report</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">130</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">120</field>
+        <field name="dpi">90</field>
+    </record>
+
     <record id="elsteel_standard_purchase_report" model="ir.actions.report">
         <field name="name">ELSTEEL Standard PO</field>
         <field name="model">purchase.order</field>
@@ -8,298 +23,383 @@
         <field name="report_file">elsteel_india_purchase_report.elsteel_standard_report</field>
         <field name="binding_model_id" ref="model_purchase_order"/>
         <field name="binding_type">report</field>
+         <field name="paperformat_id" ref="elsteel_india_purchase_report.elsteel_standard_report_format" />
     </record>  
-    <record id="elsteel_standard_report_format" model="report.paperformat">
-        <field name="name">Elsteel Standard Report</field>
-        <field name="default" eval="True"/>
-        <field name="format">A4</field>
-        <field name="orientation">Portrait</field>
-        <field name="margin_top">110</field>
-        <field name="margin_bottom">12</field>
-        <field name="margin_left">5</field>
-        <field name="margin_right">5</field>
-        <field name="header_line" eval="False"/>
-        <field name="header_spacing">110</field>
-        <field name="dpi">90</field>
-    </record>
+    
 
     <template id='elsteel_standard_report' name='elsteel standard report'>
-        <div class="header">
-            <t t-foreach='docs' t-as="o">
-                <div class="row">
-                    <div class="col-4 text-center" style="margin-left:auto;margin-right:auto">
-                        <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="width:200px"/>
+       <div class="page">
+            <div class="header">
+                <t t-foreach='docs' t-as="o">
+                    <div class="row">
+                        <div class="col-4 text-center" style="margin-left:auto;margin-right:auto">
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="width:200px"/>
+                        </div>
                     </div>
-                </div>  
-                <div class="row">
-                    <div class="col-4 text-left">
-                        <p style="text-align:left;font-family:calibri;font-size:11px" >
-                            <span t-field="o.partner_id.parent_id" /><br/>
-                            <span t-field="o.partner_id.street" /><br/>
-                            <span t-field="o.partner_id.street2" /><br/>
-                            <span t-field="o.partner_id.city" /><br/>
-                            <span t-field="o.partner_id.state_id.name" />
-                            <span t-field="o.partner_id.zip" /><br/>
-                            <span t-field="o.partner_id.country_id.name" />
-                        </p>
-                         <table class="table table-borderless table-sm text-left" style="padding-top:100px;font-family:calibri;font-size:11px"> 
-                            <tr  style="text-align:left">
-                                <td style="text-align:left;width:120px;padding-top:100px">Contact</td> 
-                                <td style="text-align:left;padding-top:100px">
-                                    <t t-foreach="o.partner_id.child_ids" t-as="child">
-                                        <t t-if="child.type=='contact'">
-                                            <span style="text-align:left;width:50px" t-field="child.name" />
+                    <div class="row">
+                        <div class="col-4 text-left">
+                            <p style="text-align:left;font-family:calibri(body);font-size:11px">
+                                <span t-field="o.partner_id.name" />
+                                <span t-field="o.partner_id.parent_id" /><br/>
+                                <span t-field="o.partner_id.street" /><br/>
+                                <span t-field="o.partner_id.street2" /><br/>
+                                <span t-field="o.partner_id.city" />
+                                <span t-field="o.partner_id.state_id.name" />
+                                <span t-field="o.partner_id.zip" /><br/>
+                                <span t-field="o.partner_id.country_id.name" />
+                            </p>
+                            <table class="table table-borderless table-sm text-left" style="padding-top:100px;font-family:calibri(body);font-size:11px"> 
+                                <tr  style="text-align:left">
+                                    <td style="text-align:left;width:120px;padding-top:100px">Contact</td> 
+                                    <td style="text-align:left;padding-top:100px">
+                                        <t t-foreach="o.partner_id.child_ids" t-as="child">
+                                            <t t-if="child.type=='contact'">
+                                                <span style="text-align:left;width:50px" t-field="child.name" />
+                                            </t>
                                         </t>
-                                    </t>
-                                </td>
-                            </tr>
-                           
-                        </table> 
+                                    </td>
+                                </tr>
+                            </table> 
+                        </div>
+                        <div class="col-4">
+                        </div>
+                        <div class="col-4">
+                            <h5 style="text-align:right"><b>Order <span t-field="o.name"/></b></h5>
+                            <p style="font-family:calibri(body);font-size:11px;text-align:right">page<span class="page" /></p>
+                            <p class="p-0 m-0" style="text-align:right;font-family:calibri(body);font-size:11px" >
+                                <span t-field="o.company_id.name" /><br/>
+                                <span t-field="o.company_id.street" /><br/>
+                                <span t-field="o.company_id.street2" /><br/>
+                                <span t-field="o.company_id.city" /><br/>
+                                <span t-field="o.company_id.state_id.name" />
+                                <span t-field="o.company_id.zip" />
+                            
+                                <table class="table table-borderless table-sm text-right p-0 m-0" style="font-family:calibri(body);font-size:11px;padding-top:0px"> 
+                                    <tr>
+                                        <td style="text-align:left">Phone No.</td> 
+                                        <td><span t-field="o.company_id.mobile" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left">Fax No.</td> 
+                                        <td> <span t-field="o.company_id.mobile" /> </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left">Home Page</td> 
+                                        <td> <span  t-field="o.company_id.website" /> </td>
+                                    </tr>
+                                </table>
+                            </p>
+                        </div>
                     </div>
-                    <div class="col-4">
-                    </div>
-                    <div class="col-4">
-                        <h5 style="padding-bottom:20px;text-align:right"><b>Order <span t-field="o.name"/></b></h5>
-                        <p style="text-align:right;font-family:calibri;font-size:11px" >
-                            <span t-field="o.company_id.name" /><br/>
-                            <span t-field="o.company_id.street" /><br/>
-                            <span t-field="o.company_id.street2" /><br/>
-                            <span t-field="o.company_id.city" /><br/>
-                            <span t-field="o.company_id.state_id.name" />
-                            <span t-field="o.company_id.zip" /><br/>
-                            <span t-field="o.company_id.country_id.name" />
-                        </p>
-                        <table class="table table-borderless table-sm text-right" style="font-family:calibri;font-size:11px"> 
-                            <tr>
-                                <td style="text-align:left">Phone No.</td> 
-                                <td><span t-field="o.company_id.mobile" /></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left">Fax No.</td> 
-                                <td> <span t-field="o.company_id.mobile" /> </td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left">Home Page</td> 
-                                <td> <span  t-field="o.company_id.website" /> </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-4">
-                         <table class="table table-borderless table-sm text-left" style="font-family:calibri;font-size:11px"> 
-                            <tr>
-                                <td style="text-align:left;width:65px">Buy-from Vendor No.</td> 
-                                <td style="text-align:left;width:50px"><span style="text-align:left" t-field="o.partner_ref" /></td>
-                            </tr>
-                            <tr>      
-                                <td style="text-align:left">GST Reg. No.</td> 
-                                <td style="text-align:left"><span style="text-align:left" t-field="o.partner_id.vat" /></td>
-                            </tr>
-                           
-                        </table>         
-                    </div>
-                    <div class="col-4">
-                    </div>
-                    <div class="col-4">
-                        <table class="table table-borderless table-sm text-right" style="font-family:calibri;font-size:11px"> 
-                            <tr>
-                                <td style="text-align:left">GST Reg.No.</td> 
-                                <td><span t-field="o.company_id.vat" /></td>
-                            </tr>
-                            <t t-if="o.partner_id.pan_no">
+                    <div class="row">
+                        <div class="col-4">
+                            <table class="table table-borderless table-sm text-left" style="font-family:calibri(body);font-size:11px"> 
+                                <tr>
+                                    <td style="text-align:left;width:65px">Buy-from Vendor No.</td> 
+                                    <td style="text-align:left;width:50px"><span style="text-align:left" t-field="o.partner_ref" /></td>
+                                </tr>
+                                <tr>      
+                                    <td style="text-align:left">GST Reg. No.</td> 
+                                    <td style="text-align:left"><span style="text-align:left" t-field="o.partner_id.vat" /></td>
+                                </tr>
+                            
+                            </table>         
+                        </div>
+                        <div class="col-4">
+                        </div>
+                        <div class="col-4">
+                            <table class="table table-borderless table-sm text-right" style="font-family:calibri(body);font-size:11px"> 
+                                <tr>
+                                    <td style="text-align:left">GST Reg.No.</td> 
+                                    <td><span t-field="o.company_id.vat" /></td>
+                                </tr>
                                 <tr>
                                     <td style="text-align:left">PAN No.</td> 
-                                    <td><span t-field="o.partner_id.pan_no"/></td>
+                                    <td><span t-field="o.pan_number" /></td>
                                 </tr>
-                            </t>
-                        </table>
+                            </table>
+                        </div>
+                    </div> 
+                    <div class="row" style="padding-bottom:25px">
+                        <div class="col-4">
+                            <table class="table table-borderless table-sm text-left" style="font-family:calibri(body);font-size:11px"> 
+                                <tr>
+                                    <td style="text-align:left;width:68px">Document Date</td> 
+                                    <td style="text-align:left;width:95px">
+                                        <!-- <span style="text-align:left" t-field="o.date_approve" /> -->
+                                        <span style="text-align:left;width:95px" t-esc="o.date_approve.strftime('%d-%m-%Y')"/>
+                                    </td>
+                                </tr>
+                                <tr>      
+                                    <td>Payment Terms</td> 
+                                    <td><span style="text-align:left" t-field="o.partner_id.property_supplier_payment_term_id" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Shipment Method</td> 
+                                    <td><span style="text-align:left" t-field="o.incoterm_id" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Delivery Date</td> 
+                                    <td><span style="text-align:left"  t-esc="o.date_planned.strftime('%d-%m-%Y')"/></td>
+                                </tr>
+                            </table>    
+                        </div>
+                        <div class="col-4">
+                        </div>
+                        <div class="col-4"> 
+                            <table class="table table-borderless table-sm text-right" style="font-family:calibri(body);font-size:11px"> 
+                                <tr>
+                                    <td style="text-align:left">Bank</td> 
+                                    <td><span t-field="o.company_id.partner_id.bank_ids.bank_id" /></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left">Account No</td> 
+                                    <td><span t-field="o.company_id.partner_id.bank_ids.acc_number" /></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left">Purchaser</td> 
+                                    <td><span t-field="o.user_id" /></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left">Company Registration No.</td> 
+                                    <td><span t-field="o.company_id.company_registry" /></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left">Company GST No.</td> 
+                                    <td><span t-field="o.company_id.company_registry" /></td>
+                                </tr>
+                            </table>
+                        </div> 
                     </div>
-                </div> 
-                <div class="row" style="padding-bottom:25px">
-                    <div class="col-4">
-                        <table class="table table-borderless table-sm text-left" style="font-family:calibri;font-size:11px"> 
-                            <tr>
-                                <td style="text-align:left">Document Date</td> 
-                                <td style="text-align:left"><span style="text-align:left" t-field="o.date_approve" /></td>
-                            </tr>
-                            <tr>      
-                                <td style="text-align:left">Payment Terms</td> 
-                                <td style="text-align:left"><span style="text-align:left" t-field="o.partner_id.property_supplier_payment_term_id" /></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left">Shipment Method</td> 
-                                <td style="text-align:left"><span style="text-align:left" t-field="o.incoterm_id" /></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left">Delivery Date</td> 
-                                <td style="text-align:left"><span style="text-align:left" t-field="o.date_planned"/></td>
-                            </tr>
-                        </table>    
+                    <div class="row">
+                        <div class="col-12"> 
+                            <table class="table table-borderless">
+                                <thead style="border-top:1px solid black;border-bottom:2px solid black;">
+                                    <tr style="font-family:calibri(body);font-size:11px;text-align:center">
+                                        <th style="width:75px;text-align:left"><b>Item/Account No.</b></th>
+                                        <th style="width:89px;text-align:left"><b>HSN Code</b></th>
+                                        <th style="width:70px;text-align:left"><b>Description</b></th>
+                                        <th style="width:80px"><b>Quantity</b></th>
+                                        <th style="width:55px"><b>Unit Of Measure</b></th>
+                                        <th style="width:60px"><b>Direct Unit Cost</b></th>
+                                        <th style="width:80px"><b>Disc</b></th>
+                                        <th style="width:75px;text-align:center"><b>Amount</b></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
-                    <div class="col-4">
-                    </div>
-                    <div class="col-4"> 
-                        <table class="table table-borderless table-sm text-right" style="font-family:calibri;font-size:11px"> 
-                            <tr>
-                                <td style="text-align:left">Bank</td> 
-                                <td><span t-field="o.company_id.partner_id.bank_ids.bank_id" /></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left">Account No</td> 
-                                <td><span t-field="o.company_id.partner_id.bank_ids.acc_number" /></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left">Purchase</td> 
-                                <td><span t-field="o.user_id" /></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left">Company Registration No.</td> 
-                                <td><span t-field="o.company_id.company_registry" /></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left">Company GST No.</td> 
-                                <td><span t-field="o.company_id.company_registry" /></td>
-                            </tr>
-                        </table>
-                    </div>  
-                </div>
-            </t>
-        </div>
+                </t>
+            </div>
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.internal_layout">
+                        <!-- <div class="page" style="padding-top:380px"> -->
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-12"> 
+                                        <table class="table table-borderless" >
+                                            <tbody>
+                                                <t t-foreach="doc.order_line" t-as="line">
+                                                    <tr style="font-family:calibri;font-size:11px;">
+                                                        <td style="text-align:left;width:80px">
+                                                            <span t-field="line.product_id.default_code" />
+                                                        </td>
+                                                        <td style="text-align:center;width:89px">
+                                                            <span t-field="line.product_id.l10n_in_hsn_code" />
+                                                        </td>
+                                                        <td style="text-align:center;width:40px"> 
+                                                            <span t-field="line.product_id.name" />
+                                                        </td>
+                                                        <td style="text-align:left;width:80px">
+                                                            <span t-field="line.product_qty" />
+                                                        </td>
+                                                        <td style="text-align:left;width:80px">
+                                                            <span t-field="line.product_uom" />
+                                                        </td>
+                                                        <td style="text-align:left;width:80px">
+                                                            <span t-field="line.price_unit" />
+                                                        </td>
+                                                        <td style="text-align:center;width:80px">
+                                                            <!-- <span t-field="" /> -->
+                                                        </td>
+                                                        <td style="text-align:right;width:85px">
+                                                            <span t-field="line.price_subtotal" />
+                                                        </td>
+                                                    </tr>
+                                                </t> 
+                                            </tbody>           
+                                        </table> 
+                                    </div>    
+                                </div>       
+                            </div>    
+                        <!-- </div> -->
 
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="doc">
-                <t t-call="web.internal_layout">
-                    <!-- <div class="page" style="padding-top:380px"> -->
-                        <div class="container"  style="padding-top:320px">
-                            <div class="row">
-                                <table class="table table-borderless">
-                                    <thead style="border-top:1px solid black;border-bottom:2px solid black">
-                                        <tr style="font-family:calibri;font-size:11px">
-                                            <th>Item/Account No.</th>
-                                            <th>HSN Code</th>
-                                            <th>Description</th>
-                                            <th>Quantity</th>
-                                            <th>Unit Of Measure</th>
-                                            <th>Direct Unit Cost</th>
-                                            <th>Disc</th>
-                                            <th>Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <t t-foreach="o.order_line" t-as="line">
-                                            <tr style="font-family:calibri;font-size:11px;">
-                                                <td>
-                                                    <span t-field="line.product_id.default_code" />
-                                                </td>
-                                                <td>
-                                                    <span t-field="line.product_id.l10n_in_hsn_code" />
-                                                </td>
-                                                <td>
-                                                    <span t-field="line.product_id.name" />
-                                                </td>
-                                                <td>
-                                                    <span t-field="line.product_qty" />
-                                                </td>
-                                                <td>
-                                                    <span t-field="line.product_uom" />
-                                                </td>
-                                                <td>
-                                                    <span t-field="line.price_unit" />
-                                                </td>
-                                                <td>
-                                                    <!-- <span t-field="" /> -->
-                                                </td>
+                        <!-- <div class="page"> -->
+                            <div style="page-break-before: always">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <p style="font-family:calibri(body);font-size:11px;padding-top:35px"><b>TERMS &amp; CONDITIONS:-</b><br/>
+                                            1.Please send your order confirmation within 24 hours.<br/>
+                                            2.Please mention buyers &amp; sellers GST Reg.No./HSN Code which is available at the bottom of order<br/>
+                                            3.Invoices must be submitted in quadruplicate<br/>
+                                            4.Material supplied must be as per our specifications.<br/>
+                                            5.If the quality of the material &amp; or services provided by you against this order are not upto our standard they will be rejected at your expense.<br/>
+                                            6.Rates must be confirmed before delivery.<br/>
+                                            7.Order will be cancelled if the material is not delivered or processed within three months.<br/>
+                                            8.All documents must be submittedalong with the material.<br/>
+                                            9.Material shall be accepted on our working Days 8:00am to 4:00pm.(Execpt Fri,Sat,Sun)<br/>
+                                            10.Test,Inspection &amp; ROHS certificate as applicable are mandatory.<br/>
+                                            11.This Purchase Order and the contract resulting here from (i)shall be construed in accordance with the laws under Goa jurisdictions without regard for its principles of conflicts of laws and 
+                                            (ii)shall not be assignable by Seller.Any action or proceeding against either party relating to this Purchase Order must be brought and enforced in the courts of Goa,<br/><br/>
+                                            This contract and any disputes arising under or related thereto(whether for breach of contract,tortious conduct or otherwise)
+                                            shall be governed by the laws under Goa Jurisdiction,without reference to its conflicts of law principles.
+                                            <br/><br/>
+                                            Any legal actions.suits or proceedings arising out of this Agreement(whether for breach of contract,tortious conduct or otherwise)
+                                            shall be brought exclusively in Goa Court,and the parties to this Agreement hereby accept and submit to the
+                                            personal<br/>
+                                            jurisdiction of these Goa Courts with respect to any legal actions,suits,or proceeding arising out of this Agreement.
 
-                                                <td style="text-align:right">
-                                                    <span t-field="line.price_subtotal" />
+                                        </p>
+                                    </div>
+                                    <div class="col-4"> 
+                                        <table class="table table-borderless table-sm text-right" style="font-family:calibri(body);font-size:11px"> 
+                                            <tr>
+                                                <td style="text-align:right;padding-top:15px">
+                                                    <b>Total INR</b>
+                                                </td>
+                                                <td style="padding-top:15px;border-top:2px solid black">
+                                                    <span t-field="doc.amount_untaxed"/>
                                                 </td>
                                             </tr>
-                                        </t> 
-                                    </tbody>           
-                                </table> 
-                            </div>
-                            <div class="row">
-                                <div class="col-8">
-                                    <p style="font-family:calibri;font-size:11px">TERMS &amp; CONDITIONS:-<br/>
-                                        1.Please send your order confirmation within 24 hours.<br/>
-                                        2.Please mention buyers &amp; sellers GST Reg.No./HSN Code which is available at the bottom of order<br/>
-                                        3.Invoices must be submitted in quadruplicate<br/>
-                                        4.Material supplied must be as per our specifications.<br/>
-                                        5.If the quality of the material &amp; or services provided by you against this order are not upto our standard they will be rejected at your expense.<br/>
-                                        6.Rates must be confirmed before delivery.<br/>
-                                        7.Order will be cancelled if the material is not delivered or processed within three months.<br/>
-                                        8.All documents must be submittedalong with the material.<br/>
-                                        9.Material shall be accepted on our working Days 8:00am to 4:00pm.(Execpt Fri,Sat,Sun)<br/>
-                                        10.Test,Inspection &amp; ROHS certificate as applicable are mandatory.<br/>
-                                        11.This Purchase Order and the contract resulting here from (i)shall be construed in accordance with the laws under Goa jurisdictions without regard for its principles of conflicts of laws and 
-                                        (ii)shall not be assignable by Seller.Any action or proceeding against either party relating to this Purchase Order must be brought and enforced in the courts of Goa,<br/><br/><br/><br/>
-                                        This contract and any disputes arising under or related thereto(whether for breach of contract,tortious conduct or otherwise)
-                                        shall be governed by the laws under Goa Jurisdiction,without reference to its conflicts of law principles.
-                                        <br/><br/>
-                                        Any legal actions.suits or proceedings arising out of this Agreement(whether for breach of contract,tortious conduct or otherwise)
-                                        shall be brought exclusively in Goa Court,and the parties to this Agreement hereby accept and submit to the
-                                        personal<br/>
-                                        jurisdiction of these Goa Courts with respect to any legal actions,suits,or proceeding arising out of this Agreement.
-                                    </p>
-                                </div>
-                                <div class="col-4"> 
-                                    <table class="table table-borderless table-sm text-right" style="font-family:calibri;font-size:11px;"> 
-                                        <tr>
+                                            <tr>
+                                                <t t-set="tax_lines" t-value="doc.get_taxes()"/>
+                                                <td style="text-align:right;padding-top:140px">
+                                                    <span>SGST</span>
+                                                </td>
+                                                <td style="padding-top:140px">
+                                                    <t t-foreach="tax_lines" t-as="l">
+                                                        <t t-if="l['tax_group']=='GST'">
+                                                            <span t-esc="'{0:,.2f}'.format(l['tax_rate']/2)"/><span>&#160;%</span>
+                                                        </t>
+                                                        <t t-if="not l['tax_group']=='GST'">
+                                                            <span t-esc="0.0"/><span>&#160;%</span>
+                                                        </t>
+                                                    </t>   
+                                                </td> 
+                                            </tr>
+                                            <tr>
+                                            <t t-set="tax_lines" t-value="doc.get_taxes()"/>
+                                                <td style="text-align:right">
+                                                    <span>CGST</span>
+                                                </td>
+                                                <td>
+                                                    <t t-foreach="tax_lines" t-as="l">
+                                                        <t t-if="l['tax_group']=='GST'">
+                                                            <span t-esc="'{0:,.2f}'.format(l['tax_rate']/2)"/><span>&#160;%</span>
+                                                        </t>
+                                                        <t t-if="not l['tax_group']=='GST'">
+                                                            <span t-esc="0.0"/><span>&#160;%</span>
+                                                        </t>
+                                                    </t>   
+                                                </td> 
+                                            </tr>
+                                            <tr>
+                                            <!-- <t t-set="tax_lines" t-value="doc.get_taxes()"/> -->
+                                                <td style="text-align:right;font-family:calibri(body);font-size:11px">
+                                                    <span>Other Taxes Amount</span>
+                    
+                                                </td>
                                             
-                                            <td style="text-align:right;padding-top:30px"><b>Total INR</b></td>
-                                            <td style="padding-top:30px">
-                                                <span t-field="o.amount_untaxed"/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <t t-set="tax_lines" t-value="o.get_taxes()"/>
-                                            <td style="text-align:right;padding-top:140px">
-                                                <span>SGST</span>
-                                            </td>
-                                            <td style="padding-top:140px">
-                                                <t t-foreach="tax_lines" t-as="l">
-                                                    <t t-if="l['tax_group']=='GST'">
-                                                        <span t-esc="'{0:,.2f}'.format(l['tax_rate']/2)"/><span>&#160;%</span>
-                                                    </t>
-                                                    <t t-if="not l['tax_group']=='GST'">
-                                                        <span t-esc="0.0"/><span>&#160;%</span>
-                                                    </t>
-                                                </t>   
-                                            </td> 
-                                        </tr>
-                                        <tr>
-                                        <t t-set="tax_lines" t-value="o.get_taxes()"/>
-                                            <td style="text-align:right">
-                                                <span>CGST</span>
-                                            </td>
-                                            <td>
-                                                <t t-foreach="tax_lines" t-as="l">
-                                                    <t t-if="l['tax_group']=='GST'">
-                                                        <span t-esc="'{0:,.2f}'.format(l['tax_rate']/2)"/><span>&#160;%</span>
-                                                    </t>
-                                                    <t t-if="not l['tax_group']=='GST'">
-                                                        <span t-esc="0.0"/><span>&#160;%</span>
-                                                    </t>
-                                                </t>   
-                                            </td> 
-                                        </tr>
-                                        <tr>
-                                            <td style="text-align:right"><b>Total INR Incl.Taxes </b></td>  
-                                            <td>    
-                                                <span t-field="o.amount_total"/>
-                                            </td> 
-                                        </tr>
-                                    </table>
+                                            </tr>
+                                            <tr>
+                                            <!-- <t t-set="tax_lines" t-value="doc.get_taxes()"/> -->
+                                                <td style="text-align:right;font-family:calibri(body);font-size:11px;">
+                                                    <span>Other Taxes Amount</span>
+                                                </td>
+                                                <td style="border-bottom:1px solid black;width:90px">  
+                                                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:right"><b>Total INR Incl.Taxes </b></td>  
+                                                <td> 
+                                                    <span t-field="doc.amount_total"/>
+                                                </td> 
+                                            </tr>
+                                        </table>
+                                    </div> 
+                                    
                                 </div> 
-                            </div>                 
-                        </div>    
-                    <!-- </div> -->
-                </t>
-            </t>
-        </t>  
-        <!-- </div> -->
+                                <hr style="border-top:1px solid black;margin-top:135px"/>
+                                <div class="row">
+                                    <div class="col-4" style="font-family:calibri(body);font-size:11px;padding-top:50px">
+                                        <table class="table table-borderless table-sm text-left" style="font-family:calibri(body);font-size:11px;"> 
+                                            <tr class="text-left">
+                                                <td style="text-align:left;width:75px">Prepared By</td>
+                                                <!-- <td style="width:65px"><span style="text-align:left" t-field="" /></td> -->
+                                            </tr>
+                                        </table>            
+                                    </div>
+                                    <div class="col-4" style="font-family:calibri(body);font-size:11px;">
+                                        <table class="table table-borderless table-sm" style="font-family:calibri(body);font-size:11px"> 
+                                            <tr class="text-left">
+                                                <td style="text-align:right;width:65px">Checked by</td>
+                                                <!-- <td style="width:60px"><span t-field="" /></td> -->
+                                            </tr>
+                                        </table>  
+                                    </div>
+                                    <div class="col-4" style="font-family:calibri(body);font-size:11px;text-align:right">
+                                        <table class="table table-borderless table-sm" style="font-family:calibri(body);font-size:11px"> 
+                                            <tr class="text-left">
+                                                <td style="text-align:right">Approved By</td>
+                                                <!-- <td style="width:60px"><span t-field="" /></td> -->
+                                            </tr>
+                                        </table>   
+                                    </div>
+                                </div>
+                            </div>        
 
+                        <!-- </div> -->
+                    </t>
+                </t>
+            </t>  
+            
+            <!-- <div class="footer" style="border-top:1px solid black;padding-top:15px">
+                <div class="row">
+                    <div class="col-4" style="font-family:calibri(body);font-size:11px;padding-top:40px">
+                        <table class="table table-borderless table-sm text-left" style="font-family:calibri(body);font-size:11px;"> 
+                            <tr class="text-left">
+                                <td style="text-align:left;width:75px">Prepared By</td>
+                                <td style="width:65px"><span style="text-align:left" t-field="" /></td>
+                                
+
+                            </tr>
+                        </table>            
+                    </div>
+                    <div class="col-4" style="font-family:calibri(body);font-size:11px">
+                        <table class="table table-borderless table-sm" style="font-family:calibri(body);font-size:11px"> 
+                            <tr class="text-left">
+                                <td style="text-align:right;width:65px">Checked by</td>
+                                <td style="width:60px"><span t-field="" /></td>
+                                
+                            </tr>
+                        </table>  
+                    </div>
+                    <div class="col-4" style="font-family:calibri(body);font-size:11px;text-align:right">
+                        <table class="table table-borderless table-sm" style="font-family:calibri(body);font-size:11px"> 
+                            <tr class="text-left">
+                                <td style="text-align:right">Approved By</td>
+                                <td style="width:60px"><span t-field="" /></td>
+                                
+                            </tr>
+                        </table>   
+                    </div>
+                </div>
+            </div>         -->
+
+
+        </div>
     </template>
 
 </odoo>

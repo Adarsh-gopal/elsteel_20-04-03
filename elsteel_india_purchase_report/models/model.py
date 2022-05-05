@@ -1,10 +1,20 @@
 
 from odoo import models, fields,api
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 class PurchasrOrderReport(models.Model):
 
     _inherit='purchase.order'
 
+    # @api.model
+    # def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+    #     res = super().fields_view_get(view_id, view_type, toolbar, submenu)
+    #     if toolbar and 'print' in res['toolbar']:
+    #         for record in res['toolbar'].get('print'):
+    #             if record.get('name') == 'ELSTEEL Import PO':
+    #                 inde_el = res['toolbar'].get('print').index(record)
+    #                 res['toolbar'].get('print').pop(inde_el)
+    #     return res
 
 
     def get_taxes(self):    
@@ -91,6 +101,7 @@ class PurchasrOrderReport(models.Model):
                     continue
 
             sorted_tax.append({'hsn':line,'tax':tax_id,'tax_rate':tot_rax_rate,'igst':igst_val,'sgst':sgst_val,'tcs':tcs_val,'tcs_rate':tcs_rate,'tax_group':group})
+        print(sorted_tax,'********************')
         return sorted_tax
 
 
