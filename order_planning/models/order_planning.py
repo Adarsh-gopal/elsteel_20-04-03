@@ -59,14 +59,26 @@ class PlanningCalculation(models.Model):
     workcenter_capacity_ids=fields.One2many('workcenter.capacity','planning_workcenter_id',string="Work Center Capacity")    
     material_capacity_ids=fields.One2many('material.capacity','planning_material_id',string="Material Center Capacity")    
     resource_capacity_ids=fields.One2many('resource.capacity','planning_resource_id',string="Resource Center Capacity")    
-    lead_hours  = fields.Integer(string="Lead Hours",compute='_compute_lead_day_hours')
-    lead_days = fields.Integer(string="Lead Days",compute='_compute_lead_day_hours')
-    
-    # @api.onchange('material_capacity_ids')    
-    def _compute_lead_day_hours(self):
-        for rec in self.workcenter_capacity_ids:
-            self.lead_days = self.lead_days + rec.lead_days
-            self.lead_hours = self.lead_hours + rec.lead_hours
+    # lead_hours  = fields.Integer(string="Lead Hours",compute='_compute_lead_day_hours')
+    # lead_days = fields.Integer(string="Lead Days",compute='_compute_lead_day_hours')
+    lead_hours  = fields.Integer(string="Lead Hours")
+    lead_days = fields.Integer(string="Lead Days")
+    # @api.depends('material_capacity_ids')    
+    # def _compute_lead_day_hours(self):
+    #     for line in self:
+    #         for rec in line.workcenter_capacity_ids:
+    #             line.lead_days = line.lead_days + rec.lead_days
+    #             line.lead_hours = line.lead_hours + rec.lead_hours
+    #         if line.lead_hours > 24:
+    #             extra_days = line.lead_hours//24
+    #             line.lead_days = extra_days + line.lead_days
+    #             line.lead_hours = line.lead_hours - (extra_days*24)
+    #         line.plannig_sheet_id.lead_time = line.lead_days
+
+    # @api.onchange('lead_days')
+    # def lead_time_sheet(self):
+    #     # for rec_2 in self:
+    #     self.plannig_sheet_id.lead_time = self.lead_days
 
     def generate_all_bom(self):
         if self.product_id and self.plannig_sheet_id:
@@ -103,7 +115,7 @@ class WorkCenterCapacity(models.Model):
     alt_work_center=fields.Many2many('mrp.workcenter',relation='mrp_workcenter_alt',string="Alternate Work Centre")
     wc_available_on= fields.Datetime(string='W/c available on', default=fields.Datetime.now)
     lead_days=fields.Integer(string="Lead Days")
-    lead_hours=fields.Integer(string="Lead Hours")
+    lead_hours=fields.Float(string="Lead Hours")
 
 
 
@@ -135,10 +147,10 @@ class ResourceCapacity(models.Model):
 
 
 
-class ResConfigSetting(models.TransientModel):
-    _inherit = 'res.config.settings'
+# class ResConfigSetting(models.TransientModel):
+#     _inherit = 'res.config.settings'
 
-    planning_worksheet = fields.Boolean(related='company_id.planning_worksheet',string="Planning Worksheet")
+#     planning_worksheet = fields.Boolean(related='company_id.planning_worksheet',string="Planning Worksheet")
 
 
     # def set_values(self):
@@ -160,7 +172,7 @@ class PlanningWorksheet(models.Model):
     product_id=fields.Many2one('product.product',string="Product")
     company_id=fields.Many2one('res.company',string="Company")
     required_qty=fields.Float(string="Required Qty")
-    lead_time=fields.Float(string="Lead Time")
+    lead_time=fields.Integer(string="Lead Time",compute='_compute_lead_time')
     source_id=fields.Many2one("sale.order",string='Source')
     line_ids = fields.Many2one("sale.order.line",string='line ids')
     route=fields.Many2one('stock.location.route',string="Route")
@@ -196,17 +208,43 @@ class PlanningWorksheet(models.Model):
                                 'material_capacity_ids':[(0,0,lines_1) for lines_1 in comp_dict.get('without_bom')],
                                 'workcenter_capacity_ids':[(0,0,lines_2) for lines_2 in comp_dict.get('with_bom')]}
                     plann_cal_obj = self.env['planning.calculation'].search([('plannig_sheet_id','=',plann_sheet.id)])
+                    days_time = self._calculate_time_days(comp_dict)
+
                     if not plann_cal_obj:
-                        pln_cal= self.env['planning.calculation'].create(vals_dict)
+                        plann_cal_obj= self.env['planning.calculation'].create(vals_dict)
+                        plann_cal_obj.lead_days = days_time.get('total_days')
+                        plann_cal_obj.lead_hours = days_time.get('hours')
                     else:
                         workcenter_capacity = self.env['workcenter.capacity'].search([('planning_workcenter_id','=',plann_cal_obj.id)])
                         material_capacity = self.env['material.capacity'].search([('planning_material_id','=',plann_cal_obj.id)])
-                        print(workcenter_capacity,material_capacity,44444444444444444)
                         material_capacity.unlink()
                         workcenter_capacity.unlink()
-                        plann_cal_obj.write(vals_dict) 
-                       # plann_cal_obj.write(vals_dict)
+                        plann_cal_obj.write(vals_dict)
+                        plann_cal_obj.lead_days = days_time.get('total_days')
+                        plann_cal_obj.lead_hours = days_time.get('hours')
 
+    def _calculate_time_days(self,comp_dict):
+        hours = 0
+        for time_hours in comp_dict.get('with_bom'):
+            hours = hours + time_hours.get('lead_hours')
+
+        total_days = 0
+        for days in comp_dict.get('with_bom'):
+            total_days = total_days + days.get('lead_days')
+
+        if hours > 24:
+            total_days = total_days + (hours//24)
+            hours = hours - (hours//24) * 24
+        else:
+            total_days = total_days
+
+        return{'total_days':total_days,
+                'hours':hours}
+
+    def _compute_lead_time(self):
+        for rec in self:
+            lead_time = self.env['planning.calculation'].search([('plannig_sheet_id','=',rec.id)])
+            rec.lead_time = lead_time.lead_days
     
     def _fetch_components_product(self,product_id,with_bom,without_bom,company_id,planned_qty,comp_qty):
         bom_id = product_id.product_tmpl_id.bom_ids.filtered(lambda x: x.company_id.id == company_id.id )
