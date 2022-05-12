@@ -4,6 +4,85 @@ from odoo import models, fields, api, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from datetime import date
 import datetime
+from lxml import etree
+
+
+class CurrencyCustomMaster(models.Model):
+    _name = 'custom.currency.master.line'
+    _rec_name = 'currency_id'
+    _description = "Master Currency Line"
+
+    currency_id = fields.Many2one('res.currency',string="Currency")
+    # company_rate = fields.Float(string="Unit per Currency")
+    inverse_company_rate = fields.Float(string="Unit per Currency")
+    currency_line_id = fields.Many2one('custom.currency.master')
+    
+    @api.constrains('currency_id')
+    def _check_parent_currency_id(self):
+        for rec in self:
+            if rec.currency_id == rec.currency_line_id.currency_id:
+                raise UserError("{} is your Report Currency.".format(rec.currency_id.name))
+            for line in rec.currency_line_id.currency_line_ids:
+                if rec.currency_id == line.currency_id and rec.id != line.id:
+                    raise ValidationError(_("""Currency already exists!"""))
+
+
+class CurrencyCustomMaster(models.Model):
+    _name = 'custom.currency.master'
+    _rec_name = 'currency_id'
+    _description = "Master Currency"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    currency_id = fields.Many2one('res.currency',string="Currency",tracking=True)
+    company_id = fields.Many2one('res.company',string="Company",default=lambda self: self.env.company.id, index=1)
+    currency_line_ids = fields.One2many('custom.currency.master.line','currency_line_id')
+    active = fields.Boolean(default=True)
+    
+    @api.onchange('currency_id')
+    def _onchange_is_current_company_currency(self):
+        if self.currency_id and self.currency_id == self.company_id.currency_id:
+            raise UserError("This is your Report Currency.")
+        for line in self.currency_line_ids:
+            if self.currency_id == line.currency_id:
+                raise ValidationError(_("""Currency already exists in Currency Line!"""))
+
+
+
+    @api.constrains('currency_id','company_id')
+    def check_order_delay_reason(self):
+        for rec in self:
+            docs=rec.env['custom.currency.master'].search([('currency_id','=',rec.currency_id.id),('company_id','=',rec.company_id.id)])
+            if len(docs) > 1:
+                raise ValidationError(_("""Currency already exists!"""))
+
+    # @api.model
+    # def _fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+    #     result = super(CurrencyCustomMaster, self)._fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+    #     if view_type in ('tree'):
+    #         names = {
+    #             'company_currency_name': (self.env['res.company'].browse(self._context.get('company_id')) or self.env.company).currency_id.name,
+    #             'rate_currency_name': self.env['res.currency'].browse(self._context.get('active_id')).name or 'Unit',
+    #         }
+    #         doc = etree.XML(result['arch'])
+    #         for field in [['company_rate', _('%(rate_currency_name)s per %(company_currency_name)s', **names)],
+    #                       ['inverse_company_rate', _('%(company_currency_name)s per %(rate_currency_name)s', **names)]]:
+    #             node = doc.xpath("//tree//field[@name='%s']" % field[0])
+    #             if node:
+    #                 node[0].set('string', field[1])
+    #         result['arch'] = etree.tostring(doc, encoding='unicode')
+    #     if view_type in ('form'):
+    #         names = {
+    #             'company_currency_name': (self.env['res.company'].browse(self._context.get('company_id')) or self.env.company).currency_id.name,
+    #             'rate_currency_name': self.env['res.currency'].browse(self._context.get('active_id')).name or 'Unit',
+    #         }
+    #         doc = etree.XML(result['arch'])
+    #         for field in [['company_rate', _('%(rate_currency_name)s per %(company_currency_name)s', **names)],
+    #                       ['inverse_company_rate', _('%(company_currency_name)s per %(rate_currency_name)s', **names)]]:
+    #             node = doc.xpath("//form//field[@name='%s']" % field[0])
+    #             if node:
+    #                 node[0].set('string', field[1])
+    #         result['arch'] = etree.tostring(doc, encoding='unicode')
+    #     return result
 
 
 class OrderDelayReason(models.Model):
@@ -26,33 +105,17 @@ class SaleOrderInhandReport(models.Model):
     _inherit = 'sale.order'
 
     delay_num_weeks = fields.Integer(compute='_compute_delay_num_weeks_days')
-    order_value_currency = fields.Float(compute='_compute_amount_convert_currency',store=True)
-    # estimated_time_dispatch  =  fields.Datetime(help='Estimated Time Dispatch')
-    # estimated_time_arrive  =  fields.Datetime(help='Estimated Time Arrival')
+    order_value_currency = fields.Float(compute='_compute_amount_convert_currency')
+    order_box_qty = fields.Float(compute="_compute_product_uom_qty_onhand_report")
+    order_invoiced_qty = fields.Float(compute="_compute_order_invoiced_qty_onhand")
     order_notes = fields.Char(compute='_compute_order_notes')
+    
     requested_dispatch_date = fields.Datetime(string="Requested Dispatch Date")
     order_delay_reason = fields.Many2one('order.delay.reason',string="Order Delay Reason") 
-    order_box_qty = fields.Float(compute="_compute_product_uom_qty_onhand_report",store=True)
-    order_week_name = fields.Char(string="Week No")
-    order_invoiced_qty = fields.Float(compute="_compute_order_invoiced_qty_onhand",store=True)
-
     
     
-    # @api.model
-    # def read_group(self, domain, fields, groupby, offset=0, limit=None,orderby=False, lazy=True):
-    #     result = super(SaleOrderInhandReport, self).read_group(domain, fields,groupby, offset, limit, orderby, lazy)
-    #     for res in result:
-    #         # import pdb;
-    #         # pdb.set_trace()
-    #         if res.get('date_order:week'):
-    #             # my_date = datetime.date.res.get('date_order')
-    #             # year, week_num, day_of_week = my_date.isocalendar()
-    #             if fields[4] == 'order_week_name':
-    #                 fields[4] = res.get('date_order:week')
-
-    #     return result
-
-    def flow_values(self):
+    
+    def update_order_inhand_report_values(self):
         self._compute_order_invoiced_qty_onhand()
         self._compute_product_uom_qty_onhand_report()
         self._compute_amount_convert_currency()
@@ -79,14 +142,37 @@ class SaleOrderInhandReport(models.Model):
     def _compute_amount_convert_currency(self):
         for rec in self:
             currency = self.env['res.currency'].browse(int(self.env['ir.config_parameter'].sudo().get_param('orderihreport.inhand_currency')))
-            if currency.rate_ids:
+            if currency:
                 if rec.currency_id != currency:
-                    amount_convert = rec.currency_id.with_context(date=fields.Date.today()).compute(rec.amount_total, currency)
-                    rec.order_value_currency = amount_convert
+                    # import pdb;
+                    # pdb.set_trace()
+                    master_id = self.env['custom.currency.master'].search([('currency_id','=',currency.id)])
+                    amount_convert = 0
+                    for line in master_id.currency_line_ids:
+                        if line.currency_id == rec.currency_id:
+                            amount_convert = line.inverse_company_rate * rec.amount_total
+                    if amount_convert > 0:
+                        rec.order_value_currency = amount_convert
+                    else:
+                        rec.order_value_currency = rec.amount_total                            
                 else:
                     rec.order_value_currency = rec.amount_total
             else:
                 rec.order_value_currency = rec.amount_total
+
+
+    # @api.depends('amount_total','currency_id')
+    # def _compute_amount_convert_currency(self):
+    #     for rec in self:
+    #         currency = self.env['res.currency'].browse(int(self.env['ir.config_parameter'].sudo().get_param('orderihreport.inhand_currency')))
+    #         if currency.rate_ids:
+    #             if rec.currency_id != currency:
+    #                 amount_convert = rec.currency_id.with_context(date=fields.Date.today()).compute(rec.amount_total, currency)
+    #                 rec.order_value_currency = amount_convert
+    #             else:
+    #                 rec.order_value_currency = rec.amount_total
+    #         else:
+    #             rec.order_value_currency = rec.amount_total
 
 
     @api.depends('order_line.product_id')

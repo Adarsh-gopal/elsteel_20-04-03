@@ -8,8 +8,89 @@
             <field name="binding_model_id" ref="sale.model_sale_order"/>
             <field name="binding_view_types">list</field>
             <field name="state">code</field>
-            <field name="code">records.flow_values()</field>
+            <field name="code">records.update_order_inhand_report_values()</field>
         </record>
+
+
+        <record id="search_view_custom_currency_master" model="ir.ui.view">
+            <field name="name">custom.currency.master.search.view</field>
+            <field name="model">custom.currency.master</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="currency_id"/>
+                    <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                </search>
+                
+            </field>
+        </record>
+
+        <record id="order_inhand_report_custom_currency_master_tree_view" model="ir.ui.view">
+            <field name="name">custom.currency.master.tree.view</field>
+            <field name="model">custom.currency.master</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="currency_id" string="Currency"/>
+                    <field name="company_id" string="Company"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="order_inhand_report_custom_currency_master_form_view" model="ir.ui.view">
+            <field name="name">custom.currency.master.form.view</field>
+            <field name="model">custom.currency.master</field>
+            <field name="arch" type="xml">
+                <form string="Currency Master">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="currency_id" string="Currency" required="1" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>
+                            </group>
+                            <group>
+                                <field name="company_id" string="Company" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Currency Line">
+                                <field name="currency_line_ids">
+                                    <tree editable="bottom">
+                                        <field name="currency_id" string="Currency" required="1" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>
+                                        <!-- <field name="company_rate" digits="[12,12]"/> -->
+                                        <field name="inverse_company_rate" digits="[12,12]"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="activity_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.rule" id="order_custom_currency_master_record_restricted_company_rule">
+            <field name="name">Currency Master Restricted Record: multi-company</field>
+            <field name="model_id" ref="model_custom_currency_master"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+            </field>
+        </record>
+
+        <record id="order_action_config_custom_currency_master" model="ir.actions.act_window">
+            <field name="name">Currency Master</field>
+            <field name="res_model">custom.currency.master</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_config_custom_currency_master"
+            name="Currency Master"
+            action="order_action_config_custom_currency_master"
+            parent="sale.menu_sale_config"
+            sequence="112"/>
+
 
         <record id="order_inhand_report_delay_reason_tree_view" model="ir.ui.view">
             <field name="name">order.delay.reason.tree.view</field>
@@ -100,7 +181,6 @@
                     <field name="name" string="Elsteel Ref Number" readonly="1"/>
                     <field name="client_order_ref" string="Customer Ref Number"/>
                     <field name="date_order" string="Order Date" widget="date" optional="show" readonly="1"/>
-                    <!-- <field name="order_week_name"/> -->
                     <field name="commitment_date" string="Estimated Dispatch Date" widget="date" readonly="1"/>
                     <field name="requested_dispatch_date" string="Requested Dispatch Date" widget="date"/>
                     <field name="delay_num_weeks" string="Delay - No of Weeks /Days"/>
@@ -108,11 +188,8 @@
                     <field name="order_notes" string="Notes"/>
                     <field name="order_invoiced_qty" string="Invoiced Amount"/>
                     <field name="amount_total" string="Amount" optional="hide"/>
-                    <!-- <field name="estimated_time_dispatch" string="ETD"/>
-                    <field name="estimated_time_arrive" string="ETA"/> -->
                     <field name="order_box_qty" string="Order Box Qty"/>
                     <field name="order_delay_reason" string="Order Delay Reason"/>
-                    <!-- <field name="currency_id"/> -->
                 </tree>
             </field>
         </record>
@@ -129,41 +206,7 @@
         </record>
 
 
-		<!-- <record id="order_inhand_report_sale_line_tree_view" model="ir.ui.view">
-            <field name="name">sale Order Line Tree Order Inhand Report</field>
-            <field name="model">sale.order.line</field>
-            <field name="arch" type="xml">
-                <tree create="false">
-                    <field name="order_partner_id" string="Customer Name"/>
-                    <field name="order_id" string="Elsteel Ref Number"/>
-                    <field name="customer_ref_number" string="Customer Ref Number"/>
-                    <field name="order_id_order_date" string="Order Date"/>
-                    <field name="estimated_dispatch_date" string="Estimated Dispatch Date"/>
-                    <field name="requested_dispatch_date" string="Requested Dispatch Date"/>
-                    <field name="delay_num_weeks" string="Delay - No of Weeks /Days"/>
-                    <field name="order_value_currency" string="Order Value DKK"/>
-                    <field name="product_order_note" string="Notes"/>
-                    <field name="tot_order_amt" string="Amount"/>
-                    <field name="estimated_time_dispatch" string="ETD"/>
-                    <field name="estimated_time_arrive" string="ETA"/>
-                    <field name="product_uom_qty" string="Order Box Qty"/>
-                    <field name="order_delay_reason" string="Order Delay Reason"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id="order_inhand_report_action_sale_order_lines" model="ir.actions.act_window">
-            <field name="name">Order Inhand Report</field>
-            <field name="res_model">sale.order.line</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="view_mode">tree,pivot</field>
-            <field name="target">current</field>
-            <field name="domain">[('state','in',('sale','done'))]</field>
-            <field name="view_id" ref="order_inhand_report_sale_line_tree_view"/>
-        </record> -->
-
-
-        <menuitem id="menu_order_inhand_report_sale_order" name="Order Inhand Report" action="order_inhand_report_action_sale_order_lines"
+		<menuitem id="menu_order_inhand_report_sale_order" name="Order Inhand Report" action="order_inhand_report_action_sale_order_lines"
                   parent="sale.menu_sale_report" sequence="54"/>
 
 	
