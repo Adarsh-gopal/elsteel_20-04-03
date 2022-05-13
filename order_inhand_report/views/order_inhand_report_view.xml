@@ -2,7 +2,7 @@
 <odoo>
 	<data>
 
-        <record id="data_flow_action_order_inhand_report" model="ir.actions.server">
+        <!-- <record id="data_flow_action_order_inhand_report" model="ir.actions.server">
             <field name="name">Update OIHR Values</field>
             <field name="model_id" ref="sale.model_sale_order"/>
             <field name="binding_model_id" ref="sale.model_sale_order"/>
@@ -10,7 +10,7 @@
             <field name="state">code</field>
             <field name="code">records.update_order_inhand_report_values()</field>
         </record>
-
+ -->
 
         <record id="search_view_custom_currency_master" model="ir.ui.view">
             <field name="name">custom.currency.master.search.view</field>
@@ -151,21 +151,32 @@
 	    </record>
 
 
+
 		<record id="view_order_form_order_inhand_report" model="ir.ui.view">
 	        <field name="name">sale.order.order.inhand.report</field>
 	        <field name="model">sale.order</field>
 	        <field name="inherit_id" ref="sale.view_order_form"/>
 	        <field name="arch" type="xml">
-	            <page name="other_information" position="inside">
-	                <group>
-	                    <group>
-	                        
-	                        <field name="requested_dispatch_date"/>
-	                        <field name="order_delay_reason" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>
-	                     
-	                    </group>
-	                </group>
-	            </page>
+                <xpath expr="//label[@for='commitment_date']" position="replace">
+                    <label for="commitment_date" string="Requested Dispatch Date"/>
+                </xpath>
+                <xpath expr="//group[@name='sale_shipping']//div[hasclass('o_row')]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//group[@name='sale_shipping']//div[hasclass('o_row')]" position="before">
+                    <div name="commitment_date_div_new" class="o_row">
+                        <field name="commitment_date"/>
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='expected_date']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+	            <xpath expr="//page[@name='other_information']//group[@name='sale_shipping']" position="inside">
+                    <field name="requested_dispatch_date" string="Requested Dispatch Date" invisible="1"/>
+                    <field name="order_date" invisible="1"/>
+	                <field name="expected_dispatch_date"/>
+	                <field name="order_delay_reason" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>                
+	            </xpath>
 	                  
 
 	        </field>
@@ -180,16 +191,18 @@
                 	<field name="partner_id" readonly="1" string="Customer Name"/>
                     <field name="name" string="Elsteel Ref Number" readonly="1"/>
                     <field name="client_order_ref" string="Customer Ref Number"/>
-                    <field name="date_order" string="Order Date" widget="date" optional="show" readonly="1"/>
-                    <field name="commitment_date" string="Estimated Dispatch Date" widget="date" readonly="1"/>
-                    <field name="requested_dispatch_date" string="Requested Dispatch Date" widget="date"/>
+                    <field name="order_date" string="Order Date" widget="date" optional="show" readonly="1"/>
+                    <field name="requested_dispatch_date" string="Requested Dispatch Date" widget="date" readonly="1"/>
+                    <field name="expected_dispatch_date" string="Expected Dispatch Date" widget="date"/>
                     <field name="delay_num_weeks" string="Delay - No of Weeks /Days"/>
                     <field name="order_value_currency" string="Order Value DKK"/>
                     <field name="order_notes" string="Notes"/>
-                    <field name="order_invoiced_qty" string="Invoiced Amount"/>
-                    <field name="amount_total" string="Amount" optional="hide"/>
-                    <field name="order_box_qty" string="Order Box Qty"/>
+                    <field name="total_order_quantity" string="Order Quantity"/>
+                    <field name="order_invoiced_qty" string="Invoiced Quantity" optional="hide"/>
+                    <field name="amount_total" string="Total Amount" optional="hide"/>
+                    <field name="order_box_qty" string="Order Box Qty" optional="hide"/>
                     <field name="order_delay_reason" string="Order Delay Reason"/>
+                    <field name="is_delivery_done" string="Delivery Done" optional="hide" invisible="1"/>
                 </tree>
             </field>
         </record>
@@ -201,7 +214,7 @@
             <field name="view_mode">tree,pivot,form</field>
             <field name="target">current</field>
             <!-- <field name="context">{'group_by': ['date_order:month','date_order:week']}</field> -->
-            <field name="domain">[('state','in',('sale','done')),('invoice_status','!=','invoiced')]</field>
+            <field name="domain">[('state','in',('sale','done')),('invoice_status','!=','invoiced'),('is_delivery_done','=',False)]</field>
             <field name="view_id" ref="order_inhand_report_sale_tree_view"/>
         </record>
 

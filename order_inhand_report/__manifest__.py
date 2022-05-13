@@ -14,7 +14,7 @@
 
 
     'category': 'Sales',
-    'version': '15.0.0.4',
+    'version': '15.0.0.5',
     'license': 'LGPL-3',
 
     'depends': ['base','sale','mail'],

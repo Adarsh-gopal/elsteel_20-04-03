@@ -5,7 +5,7 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from datetime import date
 import datetime
 from lxml import etree
-
+import math, datetime
 
 class CurrencyCustomMaster(models.Model):
     _name = 'custom.currency.master.line'
@@ -106,19 +106,35 @@ class SaleOrderInhandReport(models.Model):
 
     delay_num_weeks = fields.Integer(compute='_compute_delay_num_weeks_days')
     order_value_currency = fields.Float(compute='_compute_amount_convert_currency')
-    order_box_qty = fields.Float(compute="_compute_product_uom_qty_onhand_report")
+    total_order_quantity = fields.Float(compute="_compute_product_uom_qty_onhand_report")
+    order_box_qty = fields.Float()
     order_invoiced_qty = fields.Float(compute="_compute_order_invoiced_qty_onhand")
     order_notes = fields.Char(compute='_compute_order_notes')
-    
-    requested_dispatch_date = fields.Datetime(string="Requested Dispatch Date")
     order_delay_reason = fields.Many2one('order.delay.reason',string="Order Delay Reason") 
-    
-    
-    
+    is_delivery_done = fields.Boolean(compute='_compute_is_delivery_done_onhand',store=True)
+    requested_dispatch_date = fields.Date()
+    expected_dispatch_date = fields.Date(string="Expected Dispatch Date")
+    order_date = fields.Date()
+
     def update_order_inhand_report_values(self):
         self._compute_order_invoiced_qty_onhand()
         self._compute_product_uom_qty_onhand_report()
         self._compute_amount_convert_currency()
+
+
+    @api.depends('total_order_quantity','order_line.qty_delivered')
+    def _compute_is_delivery_done_onhand(self):
+        for rec in self:
+            if rec.order_line:
+                total_delivered_quantity = sum(rec.order_line.mapped('qty_delivered'))
+                if total_delivered_quantity == rec.total_order_quantity:
+                    rec.is_delivery_done = True
+                else:
+                    rec.is_delivery_done = False
+            else:
+                rec.is_delivery_done = False
+
+
 
     @api.depends('order_line.qty_invoiced')
     def _compute_order_invoiced_qty_onhand(self):
@@ -134,9 +150,9 @@ class SaleOrderInhandReport(models.Model):
     def _compute_product_uom_qty_onhand_report(self):
         for rec in self:
             if rec.order_line:
-                rec.order_box_qty = sum(rec.order_line.mapped('product_uom_qty'))
+                rec.total_order_quantity = sum(rec.order_line.mapped('product_uom_qty'))
             else:
-                rec.order_box_qty = 0
+                rec.total_order_quantity = 0
 
     @api.depends('amount_total','currency_id')
     def _compute_amount_convert_currency(self):
@@ -144,8 +160,6 @@ class SaleOrderInhandReport(models.Model):
             currency = self.env['res.currency'].browse(int(self.env['ir.config_parameter'].sudo().get_param('orderihreport.inhand_currency')))
             if currency:
                 if rec.currency_id != currency:
-                    # import pdb;
-                    # pdb.set_trace()
                     master_id = self.env['custom.currency.master'].search([('currency_id','=',currency.id)])
                     amount_convert = 0
                     for line in master_id.currency_line_ids:
@@ -187,39 +201,47 @@ class SaleOrderInhandReport(models.Model):
         
     
 
-    @api.depends('commitment_date','requested_dispatch_date')
+   
+    @api.depends('requested_dispatch_date','expected_dispatch_date')
     def _compute_delay_num_weeks_days(self):
         for rec in self:
-            if rec.commitment_date and rec.requested_dispatch_date:
-                rec.delay_num_weeks = (abs(rec.commitment_date - rec.requested_dispatch_date).days//7)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+            if rec.requested_dispatch_date and rec.expected_dispatch_date:
+                rec.delay_num_weeks = ((rec.expected_dispatch_date - rec.requested_dispatch_date).days / 7)
             else:
                 rec.delay_num_weeks = 0
 
 
 
-
-    @api.onchange('requested_dispatch_date')
-    def _onchange_requested_dispatch_date(self):
+    @api.onchange('expected_dispatch_date')
+    def _onchange_expected_dispatch_date(self):
         for rec in self:
-            if rec.date_order and rec.requested_dispatch_date:
-                if rec.requested_dispatch_date < rec.date_order:
+            if rec.order_date and rec.expected_dispatch_date:
+                if rec.expected_dispatch_date < rec.order_date:
                     raise UserError('Requested Dispatch Date Should be grater than Order Date')
-            if rec.commitment_date and rec.requested_dispatch_date: 
-                if rec.commitment_date < rec.requested_dispatch_date:
-                    raise UserError('Requested Dispatch Date Should be less than Delivery Date')
-
+            if rec.requested_dispatch_date and rec.expected_dispatch_date: 
+                if rec.requested_dispatch_date > rec.expected_dispatch_date:
+                    raise UserError('Expected Dispatch Date Should be grater than Requested Dispatch Date')
+            
     @api.onchange('commitment_date')
     def _onchange_commitment_date_inhand(self):
         for rec in self:
-            if rec.commitment_date and rec.requested_dispatch_date: 
-                if rec.commitment_date < rec.requested_dispatch_date:
-                    raise UserError('Requested Dispatch Date Should be less than Delivery Date')
+            if rec.commitment_date:
+                rec.expected_dispatch_date = rec.commitment_date
+                rec.requested_dispatch_date = rec.commitment_date
+                if rec.date_order:
+                    rec.order_date = rec.date_order
+            if rec.requested_dispatch_date and rec.expected_dispatch_date: 
+                if rec.requested_dispatch_date > rec.expected_dispatch_date:
+                    raise UserError('Expected Dispatch Date Should be grater than Requested Dispatch Date')
 
+    
     @api.onchange('date_order')
     def _onchange_date_order_inhand(self):
         for rec in self:
-            if rec.date_order and rec.requested_dispatch_date:
-                if rec.requested_dispatch_date < rec.date_order:
+            if rec.date_order:
+                rec.order_date = rec.date_order
+            if rec.date_order and rec.expected_dispatch_date:
+                if rec.expected_dispatch_date < rec.order_date:
                     raise UserError('Requested Dispatch Date Should be grater than Order Date')
         
 
