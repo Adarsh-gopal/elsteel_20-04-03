@@ -8,6 +8,16 @@ class ProductColourSale(models.Model):
     _inherit = 'sale.order.line'
 
     product_colour = fields.Char(string="Description 2",readonly=False)
+    net_weight = fields.Float(string="Net Weight",related="product_id.product_tmpl_id.weight",readonly=True,store=True)
+    gross_weight = fields.Float(string="Gross Weight",compute='_compute_gross_weight_sale_line',store=True)
+
+    @api.depends('product_uom_qty','net_weight')
+    def _compute_gross_weight_sale_line(self):
+        for rec in self:
+            if rec.net_weight and rec.product_uom_qty:
+                rec.gross_weight = rec.net_weight * rec.product_uom_qty
+            else:
+                rec.gross_weight = 0.0
 
     @api.onchange('product_id')
     def _onchange_product_colour(self):
@@ -20,6 +30,17 @@ class ProductColourPickingOperation(models.Model):
     _inherit = 'stock.move'
 
     product_colour = fields.Char(string="Description 2")
+    net_weight = fields.Float(string="Net Weight",related="product_id.product_tmpl_id.weight",readonly=True,store=True)
+    gross_weight = fields.Float(string="Gross Weight",compute='_compute_gross_weight_stock_move',store=True)
+
+    @api.depends('product_uom_qty','net_weight')
+    def _compute_gross_weight_stock_move(self):
+        for rec in self:
+            if rec.net_weight and rec.product_uom_qty:
+                rec.gross_weight = rec.net_weight * rec.product_uom_qty
+            else:
+                rec.gross_weight = 0.0
+
 
     @api.model
     def create(self,vals):
@@ -36,11 +57,33 @@ class ProductColourDetailOperation(models.Model):
     _inherit = 'stock.move.line'
 
     product_colour = fields.Char(string="Description 2",related='move_id.product_colour')
+    net_weight = fields.Float(string="Net Weight",related="product_id.product_tmpl_id.weight",readonly=True,store=True)
+    gross_weight = fields.Float(string="Gross Weight",compute='_compute_gross_weight_stock_move_line',store=True)
+
+    @api.depends('qty_done','net_weight')
+    def _compute_gross_weight_stock_move_line(self):
+        for rec in self:
+            if rec.net_weight and rec.qty_done:
+                rec.gross_weight = rec.net_weight * rec.qty_done
+            else:
+                rec.gross_weight = 0.0
+
+
 
 class ProductColourProduction(models.Model):
     _inherit = 'mrp.production'
 
     product_colour = fields.Char(string="Description 2")
+    net_weight = fields.Float(string="Net Weight",related="product_id.product_tmpl_id.weight",readonly=True,store=True)
+    gross_weight = fields.Float(string="Gross Weight",compute='_compute_gross_weight_production',store=True)
+
+    @api.depends('product_qty','net_weight')
+    def _compute_gross_weight_production(self):
+        for rec in self:
+            if rec.net_weight and rec.product_qty:
+                rec.gross_weight = rec.net_weight * rec.product_qty
+            else:
+                rec.gross_weight = 0.0
 
     # @api.depends('origin')
     # def _compute_product_colour(self):
@@ -72,4 +115,13 @@ class ProductColourWorkorder(models.Model):
     _inherit = 'mrp.workorder'
 
     product_colour = fields.Char(string="Description 2",related='production_id.product_colour')
+    net_weight = fields.Float(string="Net Weight",related="product_id.product_tmpl_id.weight",readonly=True,store=True)
+    gross_weight = fields.Float(string="Gross Weight",compute='_compute_gross_weight_production_workorder',store=True)
 
+    @api.depends('total_workorder_demand','net_weight')
+    def _compute_gross_weight_production_workorder(self):
+        for rec in self:
+            if rec.net_weight and rec.total_workorder_demand:
+                rec.gross_weight = rec.net_weight * rec.total_workorder_demand
+            else:
+                rec.gross_weight = 0.0

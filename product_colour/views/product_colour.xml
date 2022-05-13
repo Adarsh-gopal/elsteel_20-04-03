@@ -10,6 +10,10 @@
                 <div class="o_row workorder_bar" style="padding-left:15px;background-color: $o-wo-tablet-bg;color:color: $o-wo-tablet-text;">
                     <label for='product_colour' string="Description 2:" style="font-size:20px;" attrs="{'invisible': [('product_colour', '=',False)]}"/>
                     <field name="product_colour"/>
+                    <label for='net_weight' string="Net Weight:" style="font-size:20px;" attrs="{'invisible': [('net_weight', '=',0)]}"/>
+                    <field name="net_weight" attrs="{'invisible': [('net_weight', '=',0)]}"/>
+                    <label for='gross_weight' string="Gross Weight:" style="font-size:20px;" attrs="{'invisible': [('gross_weight', '=',0)]}"/>
+                    <field name="gross_weight" attrs="{'invisible': [('net_weight', '=',0)]}"/>
                 </div>
             </xpath>   
         </field>
@@ -21,7 +25,11 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//form/sheet//field[@name='order_line']//tree//field[@name='name']" position="after">
-              <field name="product_colour"/>
+              <field name="product_colour" optional="show"/>
+            </xpath>
+            <xpath expr="//form/sheet//field[@name='order_line']//tree//field[@name='product_uom_qty']" position="after">
+              <field name="net_weight" optional="show"/>
+              <field name="gross_weight" optional="show"/>
             </xpath>
             
         </field>                   
@@ -35,7 +43,10 @@
             <xpath expr="//form/sheet//field[@name='move_ids_without_package']//tree//field[@name='product_id']" position="after">
                 <field name="product_colour" readonly="1"/>
             </xpath>
-            
+            <xpath expr="//form/sheet//field[@name='move_ids_without_package']//tree//field[@name='product_uom_qty']" position="after">
+              <field name="net_weight" optional="show"/>
+              <field name="gross_weight" optional="show"/>
+            </xpath>
         </field>                   
     </record>
 
@@ -47,6 +58,10 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_id']" position="after">
                 <field name="product_colour" readonly="1"/>
+            </xpath>
+             <xpath expr="//field[@name='product_uom_qty']" position="after">
+                <field name="net_weight" optional="show"/>
+              <field name="gross_weight" optional="show"/>
             </xpath>
         </field>
     </record>
@@ -60,9 +75,13 @@
             <xpath expr="//div[hasclass('o_row')][3]" position="after">
                 <label for='product_colour' string="Description 2"/>
                 <div class="o_row">
-                    <field name="product_colour"/>
+                    <field name="product_colour" readonly="1"/>
                 </div>
-            </xpath>        
+            </xpath>
+            <xpath expr="//page[@name='miscellaneous']//field[@name='date_deadline']" position="after">
+                <field name="net_weight"/>
+              <field name="gross_weight"/>
+            </xpath>                  
         </field>                   
     </record>
 
@@ -74,6 +93,10 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_id']" position="after">
                 <field name="product_colour" string="Description 2" readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='product_uom_id']" position="after">
+                <field name="net_weight" optional="show"/>
+                <field name="gross_weight" optional="show"/>
             </xpath> 
         </field>
     </record>
@@ -87,6 +110,10 @@
             <field name="product_id" position="after">
                  <field name="product_colour" readonly="1"/>
             </field>
+            <field name="total_workorder_demand" position="after">
+                <field name="net_weight" optional="show"/>
+              <field name="gross_weight" optional="show"/>
+            </field>
         </field>
     </record> 
    
@@ -97,12 +124,19 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="after">
                 <field name="product_colour"/>
+                <field name="net_weight"/>
+                <field name="gross_weight"/>
             </xpath>
             <xpath expr="//templates//div[hasclass('oe_kanban_global_click')]//div[hasclass('o_kanban_record_bottom')]" position="after">
                 <div >
-                    <h5 >
+                    <h5>
                         <t t-if="record.product_colour.raw_value">
                             <span>Description 2 :<t t-esc="record.product_colour.value"/> </span><br/>
+                        </t>
+                        <t t-if="record.product_colour.raw_value">
+                            <span>Net Weight :<t t-esc="record.net_weight.value"/> </span><br/>
+                        </t><t t-if="record.product_colour.raw_value">
+                            <span>Gross Weight :<t t-esc="record.gross_weight.value"/> </span><br/>
                         </t>
                     </h5>
                 </div>

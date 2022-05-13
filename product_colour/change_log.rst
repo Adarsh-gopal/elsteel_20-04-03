@@ -18,6 +18,10 @@ make Description 2 field editable in sale order line.
 ================================================
 Changed flow data in sale order to stock move.
 
-15.0.0.4 --------> 15.0.0.6(10-Mar-2022) **Anke
+15.0.0.5 --------> 15.0.0.6(10-Mar-2022) **Anke
 ================================================
 Changed code flow data in sale order line to MO.
+
+15.0.0.6 --------> 15.0.0.7(15-Mar-2022) **Anke
+================================================
+Added Net Weight and Gross Weight in as per requirement.
