@@ -14,12 +14,14 @@
 
 
     'category': 'CRM',
-    'version': '15.0.0.2',
+    'version': '15.0.0.4',
     'license': 'LGPL-3',
 
     'depends': ['base','crm','partner_category'],
 
     'data': [
+        'security/ir.model.access.csv',
         'views/custom_crm.xml',
+        'views/quotation_request.xml',
     ],
 }
