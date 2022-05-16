@@ -14,7 +14,7 @@
 
 
     'category': 'CRM',
-    'version': '15.0.0.5',
+    'version': '15.0.0.6',
     'license': 'LGPL-3',
 
     'depends': ['base','crm','partner_category'],
