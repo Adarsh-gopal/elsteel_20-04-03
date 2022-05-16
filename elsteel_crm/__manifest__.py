@@ -14,7 +14,7 @@
 
 
     'category': 'CRM',
-    'version': '15.0.0.4',
+    'version': '15.0.0.5',
     'license': 'LGPL-3',
 
     'depends': ['base','crm','partner_category'],
@@ -23,5 +23,7 @@
         'security/ir.model.access.csv',
         'views/custom_crm.xml',
         'views/quotation_request.xml',
+        'views/quotation_category.xml',
+        'data/ir.sequence_data.xml',
     ],
 }

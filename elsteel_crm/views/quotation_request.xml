@@ -9,6 +9,9 @@
             <field name="arch" type="xml">
                 <tree string="Quotation Request CRM" sample="1" multi_edit="1">
                     <field name="name"/>
+                    <field name="project_name"/>
+                    <field name="partner_id"/>
+                    <field name="revision_number"/>
                 </tree>
             </field>
         </record>
@@ -17,36 +20,141 @@
         <record id="view_quotation_request_crm_form" model="ir.ui.view" >
             <field name="name">crm.quotation.request.form</field>
             <field name="model">crm.quotation.request</field>
-
             <field name="arch" type="xml">
                 <form string="Quotation Request CRM">
+                    <header>
+                        <button name="action_send_quotation_request" string="Send Quotation Request" class="oe_highlight" type="object" col="4" colspan="4"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,inprogress,negotiation,reject,cancel"/>
+                    </header>
                     <sheet>
                         <field name="company_id" invisible="1"/>
-                        <group>
-                            <group>
+                        <group name="main_group_quotation">
+                            <group name="quotation_name">
+                                <field name="name" readonly="1" string="Request No." required="1"/>
                                 <field name="project_name"/>
+                                <field name="partner_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                <field name="revision_number"/>
                             </group>
-                            <group>
-                                <field name="name" readonly="1"/>
-                            </group>
-                        </group>
-                        <group>
-                            <group>
-                                <field name="partner_id"/>
+                            <group name="group_address">
                                 <label for="street" string="Address"/>
                                 <div class="o_address_format">
                                     <field name="street" placeholder="Street..." class="o_address_street"/>
                                     <field name="street2" placeholder="Street 2..." class="o_address_street"/>
                                     <field name="city" placeholder="City" class="o_address_city"/>
-                                    <field name="state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}" context="{'default_country_id': country_id}"/>
+                                    <field name="state_id" class="o_address_state" placeholder="State" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}" context="{'default_country_id': country_id}"/>
                                     <field name="zip" placeholder="ZIP" class="o_address_zip"/>
-                                    <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                    <field name="country_id" placeholder="Country" class="o_address_country" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                                 </div>
-                            </group>
-                            <group>
+                                <field name="phone" widget='phone'/>
+                                <field name="email" widget='email'/>
                             </group>
                         </group>
+                        <notebook>
+                            <page name="general_information" string="General Information">
+                                <group name="group_general_information">
+                                    <group name="container_row_2">
+                                        <field name="user_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                        <field name="team_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                        <field name="quotation_category_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                        <field name="company_currency_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                        <field name="pricelist_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                        <field name="value"/>
+                                        <span class="o_form_label o_td_label">
+                                            INITIAL DOCUMENTATION
+                                        </span>
+                                        <div>
+                                            <field name="documentation_req_1" widget="many2many_binary" string="Attach a file" nolabel="1" colspan="2"/>
+                                        </div>
+                                    </group>
+                                    <group>
+                                    </group>
+                                </group>
+                                <group>
+                                    <field name="comments"/>
+                                </group>
+                            </page>
+                            <page name="project_etails" string="Project Details">
+                                <group>
+                                    <group name="group_project_etails">
+                                        <field name="project_assigned_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                        <field name="date_deadline"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <field name="product_type_ids">
+                                        <tree editable="bottom">
+                                            <field name="product_type_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}" string="Name"/>
+                                            <field name="quantity"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                                <group name="quotation_binary">
+                                    <group>
+                                        <span class="o_form_label o_td_label">
+                                            QUOTATION
+                                        </span>
+                                        <div>
+                                            <field name="quotation_req_1" widget="many2many_binary" string="Attach a file" nolabel="1" colspan="2"/>
+                                        </div>
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="ordering_details" string="Ordering Details">
+                                <group name="order_information" string="ORDER INFORMATION">
+                                    <field name="sale_order_ids" readonly="1"/>
+                                </group>
+                            </page>
+                            <page name="special_enclosure" string="Special Enclosure">
+                                <group name="group_special_enclosure">
+                                    <group>
+                                        <field name="spe_encl_designation"/>
+                                        <span class="o_form_label o_td_label">
+                                            Special Enclosure Request
+                                        </span>
+                                        <div>
+                                            <field name="spe_encl_request_1" widget="many2many_binary" string="Attach a file" nolabel="1" colspan="2"/>
+                                        </div>
+                                        <field name="special_encl_assigned_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <group name="group_customer_conf">
+                                        <span class="o_form_label o_td_label">
+                                            Customer Confirmation Drawing
+                                        </span>
+                                        <div>
+                                            <field name="cust_confirmation_drawing_id" widget="many2many_binary" string="Attach a file" nolabel="1" colspan="2"/>
+                                        </div>
+                                        <span class="o_form_label o_td_label">
+                                            Customer Confirmation
+                                        </span>
+                                        <div>
+                                            <field name="cust_confirmation_id" widget="many2many_binary" string="Attach a file" nolabel="1" colspan="2"/>
+                                        </div>
+                                        <field name="cust_conf_assigned_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                    </group>
+                                    <group>
+                                        <field name="cust_conf_date_deadline"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <group name="group_production">
+                                        <field name="production_documentation"/>
+                                        <field name="dwg_update_note" attrs="{'invisible': [('production_documentation', '=', False)]}"/>
+                                        <field name="bom_update_note" attrs="{'invisible': [('production_documentation', '=', False)]}"/>
+                                    </group>
+                                    <group>
+                                        <field name="production_date_deadline"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
                     </sheet>
+                        <div class="oe_chatter">
+                            <field name="message_follower_ids" groups="base.group_user"/>
+                            <field name="activity_ids"/>
+                            <field name="message_ids"/>
+                        </div>
                 </form>
             </field>
         </record>

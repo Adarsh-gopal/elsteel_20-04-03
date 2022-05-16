@@ -24,6 +24,9 @@
 	      	<field name="model">crm.lead</field>
 	      	<field name="inherit_id" ref="crm.crm_lead_view_form"/>
 	      	<field name="arch" type="xml">
+	      		<xpath expr="//header" position="inside">
+	      			<button name="project_type_quotation_request" string="Quotation Request" type="object" attrs="{'invisible': [('type', '=', 'lead')]}" class="oe_highlight"/>
+	      		</xpath>
 	      		
 	      		<xpath expr="//page[@name='internal_notes']" position="before">
 	      			<page name="lead_customer" string="Contacts" attrs="{'invisible': [('type', '=', 'opportunity')]}">
@@ -39,14 +42,9 @@
 	      				</field>
 	      			</page>
 	      		</xpath>
-
-
 	      		<xpath expr="//group[@name='lead_info']" position="attributes">
 	      			<attribute name="invisible">1</attribute>
-	      		</xpath>
-
-
-		        
+	      		</xpath>		        
 	      		<xpath expr="//header" position="inside">
 	      			<field name="state" attrs="{'invisible': [('type', '=', 'opportunity')]}" widget="statusbar" options="{'clickable': '1'}"/>
 	      		</xpath>

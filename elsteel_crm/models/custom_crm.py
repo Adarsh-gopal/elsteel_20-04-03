@@ -16,6 +16,7 @@ class CrmLead2opportunityPartner(models.TransientModel):
     
 class LeadPartner(models.Model):
     _name = 'crm.lead.customer.line'
+    _description = "Lead Customer Line"
 
     name = fields.Char(index=True)
     title = fields.Many2one('res.partner.title')
@@ -35,6 +36,18 @@ class CRMLead(models.Model):
 
     lead_child_ids = fields.One2many('crm.lead.customer.line','lead_customer')
     
+    
+    def project_type_quotation_request(self):
+        return{
+            'name' : _('Project Type Wizard'),
+            'res_model' : 'lead.project.type.quotation.wizard',
+            'type' : 'ir.actions.act_window',
+            'view_mode' : 'form',
+            'view_type' : 'form',
+            'view_id' : self.env.ref("elsteel_crm.lead_project_type_quotation_wizard_form").id,
+            'context' : self._context,
+            'target' : 'new',
+        }
 
     def _handle_partner_assignment(self, force_partner_id=False, create_missing=True):
         """ Update customer (partner_id) of leads. Purpose is to set the same
