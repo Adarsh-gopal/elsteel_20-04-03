@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_crm_lead_customer_line,crm_lead_customer_line,model_crm_lead_customer_line,base.group_user,1,1,1,1
+access_crm_quotation_request,crm_quotation_request,model_crm_quotation_request,base.group_user,1,1,1,1
+access_quotation_category,quotation_category,model_quotation_category,base.group_user,1,1,1,1
+access_quotation_product_type,quotation_product_type,model_quotation_product_type,base.group_user,1,1,1,1
+access_quotation_product_type_values,quotation_product_type_values,model_quotation_product_type_values,base.group_user,1,1,1,1
+access_lead_project_type_quotation_wizard,lead_project_type_quotation_wizard,model_lead_project_type_quotation_wizard,base.group_user,1,1,1,1
+
+
+
