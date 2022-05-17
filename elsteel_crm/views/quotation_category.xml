@@ -11,13 +11,13 @@
                         <field name="crm_project_type" string = "Project Type" widget="radio"/>
                     </group>
                 </group>
-            </form>
             <footer>
                 <group>
                     <button class="btn btn-primary" type="object" name="button_action_project_type" string="Confirm"/>
-                    <button string="Discard" special="cancel" data-hotkey="z" class="btn-secondary"/>
+                    <button string="Discard" special="cancel" class="btn-secondary"/>
                 </group>
             </footer>
+            </form>
         </field>
     </record>
 

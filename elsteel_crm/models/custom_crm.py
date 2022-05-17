@@ -36,7 +36,8 @@ class CRMLead(models.Model):
 
     lead_child_ids = fields.One2many('crm.lead.customer.line','lead_customer')
     
-    
+    def action_quotation_request_function(self):
+        return True
     def project_type_quotation_request(self):
         return{
             'name' : _('Project Type Wizard'),

@@ -24,6 +24,10 @@
 	      	<field name="model">crm.lead</field>
 	      	<field name="inherit_id" ref="crm.crm_lead_view_form"/>
 	      	<field name="arch" type="xml">
+	      		<xpath expr="/form/sheet/div[@name='button_box']/button[@name='action_schedule_meeting']" position="after">
+                    <button style="float:right;" name="action_quotation_request_function" string="RFQ" type="object" 
+                        class="oe_stat_button"/>
+                 </xpath> 
 	      		<xpath expr="//header" position="inside">
 	      			<button name="project_type_quotation_request" string="Quotation Request" type="object" attrs="{'invisible': [('type', '=', 'lead')]}" class="oe_highlight"/>
 	      		</xpath>
