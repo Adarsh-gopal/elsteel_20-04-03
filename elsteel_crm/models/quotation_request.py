@@ -22,6 +22,9 @@ PARTNER_ADDRESS_FIELDS_TO_SYNC = [
     'zip',
     'state_id',
     'country_id',
+    'phone',
+    'email',
+    'property_product_pricelist',
 ]
 
 class CrmQuotationRequest(models.Model):
@@ -30,6 +33,9 @@ class CrmQuotationRequest(models.Model):
     _description = "Quotation Request"
     _order = "id desc"
 
+    lead_id = fields.Many2one('crm.lead',string="Lead Name")
+    request_project_type = fields.Selection([('standard','Standard'),('enclosure','Special Enclosure')],string="Project Type",default='standard')
+    
     state = fields.Selection(QUOTATION_STEP_STATES)
     name = fields.Char(default=lambda self: _('New'))
     project_name = fields.Char(string="Project Name")
@@ -52,7 +58,7 @@ class CrmQuotationRequest(models.Model):
     quotation_category_id = fields.Many2one('quotation.category',string="Quotation Category",tracking=True)
     company_currency_id = fields.Many2one("res.currency", string='Currency', related='company_id.currency_id', readonly=True)
     
-    pricelist_id = fields.Many2one('product.pricelist', string='Price Level',readonly=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
+    property_product_pricelist = fields.Many2one('product.pricelist', string='Price Level',readonly=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
     value = fields.Float(string="Value")
     revision_number = fields.Integer(string="Revision No.",readonly=True,tracking=True)
     
@@ -91,6 +97,24 @@ class CrmQuotationRequest(models.Model):
     bom_update_note = fields.Char(string="BOM Update Note No.")
 
     def action_send_quotation_request(self):
+        # action = self.env["ir.actions.actions"]._for_xml_id("sale_crm.sale_action_quotations_new")
+        # action['context'] = {
+        #     'search_default_opportunity_id': self.lead_id.id,
+        #     'default_opportunity_id': self.lead_id.id,
+        #     'search_default_partner_id': self.partner_id.id,
+        #     'default_partner_id': self.partner_id.id,
+        #     'default_campaign_id': self.lead_id.campaign_id.id,
+        #     'default_medium_id': self.lead_id.medium_id.id,
+        #     'default_origin': self.name,
+        #     'default_source_id': self.source_id.id,
+        #     'default_company_id': self.company_id.id or self.env.company.id,
+        #     'default_tag_ids': [(6, 0, self.tag_ids.ids)]
+        # }
+        # if self.team_id:
+        #     action['context']['default_team_id'] = self.team_id.id,
+        # if self.user_id:
+        #     action['context']['default_user_id'] = self.user_id.id
+        # return action
         return {}
 
     @api.model

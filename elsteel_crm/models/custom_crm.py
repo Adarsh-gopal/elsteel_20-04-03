@@ -35,9 +35,35 @@ class CRMLead(models.Model):
     state = fields.Selection([('new','New'),('redirect','Redirected')], default='new',compute='_compute_state_crm')
 
     lead_child_ids = fields.One2many('crm.lead.customer.line','lead_customer')
+    count_quotation_request = fields.Integer(string="Quotation Request Count",compute='_compute_count_quotation_requeste')
+    quotation_order_ids = fields.One2many('crm.quotation.request', 'lead_id', string='Orders')
+
     
+    @api.depends('quotation_order_ids.name','quotation_order_ids.state')
+    def _compute_count_quotation_requeste(self):
+        if self.quotation_order_ids:
+            quotation_cnt = 0
+            for lead in self.quotation_order_ids:
+                if lead:
+                    quotation_cnt += 1
+            self.count_quotation_request = quotation_cnt
+        else:
+            self.count_quotation_request = 0
+
     def action_quotation_request_function(self):
-        return True
+        action = self.env["ir.actions.actions"]._for_xml_id("elsteel_crm.action_quotation_request_crm")
+        action['context'] = {
+            'default_partner_id': self.partner_id.id,
+            'search_default_lead_id': self.id
+        }
+        action['domain'] = [('lead_id', '=', self.id)]
+        quotations = self.mapped('quotation_order_ids')
+        if len(quotations) == 1:
+            action['views'] = [(self.env.ref('elsteel_crm.view_quotation_request_crm_form').id, 'form')]
+            action['res_id'] = quotations.id
+        return action
+        
+
     def project_type_quotation_request(self):
         return{
             'name' : _('Project Type Wizard'),
@@ -46,7 +72,7 @@ class CRMLead(models.Model):
             'view_mode' : 'form',
             'view_type' : 'form',
             'view_id' : self.env.ref("elsteel_crm.lead_project_type_quotation_wizard_form").id,
-            'context' : self._context,
+            'context' : {'default_lead_id': self.id},
             'target' : 'new',
         }
 

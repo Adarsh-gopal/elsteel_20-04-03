@@ -8,12 +8,14 @@
             <form create="false" edit="false">
                 <group>
                     <group name="crm_project_type">
+                        <field name="lead_id" invisible="1"/>
+                        <field name="project_name"/>
                         <field name="crm_project_type" string = "Project Type" widget="radio"/>
                     </group>
                 </group>
             <footer>
                 <group>
-                    <button class="btn btn-primary" type="object" name="button_action_project_type" string="Confirm"/>
+                    <button class="btn btn-primary" type="object" name="button_action_project_type" string="Genarate"/>
                     <button string="Discard" special="cancel" class="btn-secondary"/>
                 </group>
             </footer>
@@ -38,7 +40,6 @@
         <field name="arch" type="xml">
             <tree string="Product Types" editable="top">
                 <field name="name" required="1"/>
-                <field name="quantity"/>
             </tree>
         </field>
     </record>
@@ -89,7 +90,7 @@
     
 
     <record id="crm_quotation_category_action" model="ir.actions.act_window">
-        <field name="name">Quotation Category Types</field>
+        <field name="name">Quotation Category</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">quotation.category</field>
         <field name="view_mode">tree</field>
@@ -102,7 +103,7 @@
 
 
     <menuitem id="menu_quotation_category"
-                  name="Quotation Category Types"
+                  name="Quotation Category"
                   parent="crm.menu_crm_config_lead"
                   action="crm_quotation_category_action"
                   sequence="6"/>

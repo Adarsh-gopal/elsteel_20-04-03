@@ -34,6 +34,7 @@
                                 <field name="project_name"/>
                                 <field name="partner_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                                 <field name="revision_number"/>
+                                <field name="request_project_type" readonly="1"/>
                             </group>
                             <group name="group_address">
                                 <label for="street" string="Address"/>
@@ -57,7 +58,7 @@
                                         <field name="team_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                                         <field name="quotation_category_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                                         <field name="company_currency_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
-                                        <field name="pricelist_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                        <field name="property_product_pricelist" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                                         <field name="value"/>
                                         <span class="o_form_label o_td_label">
                                             INITIAL DOCUMENTATION
@@ -104,7 +105,7 @@
                                     <field name="sale_order_ids" readonly="1"/>
                                 </group>
                             </page>
-                            <page name="special_enclosure" string="Special Enclosure">
+                            <page name="special_enclosure" string="Special Enclosure" attrs="{'invisible': [('request_project_type', '!=', 'enclosure')]}">>
                                 <group name="group_special_enclosure">
                                     <group>
                                         <field name="spe_encl_designation"/>
